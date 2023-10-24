@@ -3,6 +3,7 @@ static class HapticSwatch {
   public float radius; // m
   public float k, mu, maxAL, maxAH;
   private float lastK, lastMu, lastAL, lastAH;
+  public boolean checkK, checkMu, checkAL, checkAH;
   private int id;
   static final float vTh = 0.015; // m/s
   private static int nextID = 0;
@@ -14,6 +15,7 @@ static class HapticSwatch {
     center = new PVector(x, y);
     radius = r;
     k = mu = maxAL = maxAH = 0;
+    checkK = checkMu = checkAL = checkAH = true;
     id = (HapticSwatch.nextID++);
   }
   

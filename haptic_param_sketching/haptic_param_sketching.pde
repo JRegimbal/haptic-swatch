@@ -21,6 +21,7 @@ boolean isManual = true;
 boolean lastMode = isManual;
 ControlP5 cp5;
 Knob k, b, maxAL, maxAH;
+Toggle checkK, checkMu, checkAL, checkAH;
 Toggle manualTog;
 long currTime, lastTime = 0;
 
@@ -71,6 +72,36 @@ OscP5 oscp5 = new OscP5(this, source);
 //final float maxK=500, maxB=1.0, MAL=2f, MAH=2f;
 final float maxK=250, maxB=0.5, MAL=1f, MAH=1f;
 
+CallbackListener CL = new CallbackListener() {
+  public void controlEvent(CallbackEvent evt) {
+    Controller c = evt.getController();
+    OscMessage msg = new OscMessage("/controller/activate");
+    synchronized(activeSwatch) {
+      msg.add(activeSwatch.getId());
+      if (c.equals(checkK)) {
+        println("checkK");
+        msg.add(0);
+        msg.add(activeSwatch.checkK);
+      } else if (c.equals(checkMu)) {
+        println("checkMu");
+        msg.add(1);
+        msg.add(activeSwatch.checkMu);
+      } else if (c.equals(checkAL)) {
+        println("checkAL");
+        msg.add(2);
+        msg.add(activeSwatch.checkAL);
+      } else if (c.equals(checkAH)) {
+        println("checkAH");
+        msg.add(3);
+        msg.add(activeSwatch.checkAH);
+      } else {
+        println("ERR - unknown controller");
+        return;
+      }
+      oscp5.send(msg, oscDestination);
+    }
+  }
+};
 
 /** Main thread */
 void setup() {
@@ -91,6 +122,12 @@ void setup() {
     .setCaptionLabel("Spring k")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
+  checkK = cp5.addToggle("checkK")
+    .plugTo(swatches[0])
+    .setValue(true)
+    .setSize(20, 20)
+    .setPosition(150, 105)
+    .onChange(CL);
   b = cp5.addKnob("mu")
     .plugTo(swatches[0])
     .setRange(0, maxB)
@@ -100,6 +137,12 @@ void setup() {
     .setCaptionLabel("Friction mu")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
+  checkMu = cp5.addToggle("checkMu")
+    .plugTo(swatches[0])
+    .setValue(true)
+    .setSize(20, 20)
+    .setPosition(150, 230)
+    .onChange(CL);
   maxAL = cp5.addKnob("maxAL")
     .plugTo(swatches[0])
     .setRange(0, MAL)
@@ -109,6 +152,12 @@ void setup() {
     .setCaptionLabel("Low Texture Amp. (N)")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
+  checkAL = cp5.addToggle("checkAL")
+    .plugTo(swatches[0])
+    .setValue(true)
+    .setSize(20, 20)
+    .setPosition(150, 355)
+    .onChange(CL);
   maxAH = cp5.addKnob("maxAH")
     .plugTo(swatches[0])
     .setRange(0, MAH)
@@ -118,6 +167,12 @@ void setup() {
     .setCaptionLabel("Texture Amp. (N)")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
+  checkAH = cp5.addToggle("checkAH")
+    .plugTo(swatches[0])
+    .setValue(true)
+    .setSize(20, 20)
+    .setPosition(150, 480)
+    .onChange(CL);
   manualTog = cp5.addToggle("isManual")
     .setPosition(75, 525)
     .setCaptionLabel("Manual/Autonomous")
@@ -211,64 +266,44 @@ void keyPressed() {
   if (key == 'r' || key == 'R') {
     maxSpeed = 0;
   }
-  else if (key == '1') {
+  else if (key == '1' || key == '2' || key == '3' || key == '4') {
+    int keyVal = int(key) - 48;
+    activeSwatch = swatches[keyVal - 1];
     for (HapticSwatch s : swatches) {
       k.unplugFrom(s);
+      checkK.unplugFrom(s);
       b.unplugFrom(s);
+      checkMu.unplugFrom(s);
       maxAL.unplugFrom(s);
+      checkAL.unplugFrom(s);
       maxAH.unplugFrom(s);
+      checkAH.unplugFrom(s);
     }
-    k.plugTo(swatches[0]).setValue(swatches[0].k);
-    b.plugTo(swatches[0]).setValue(swatches[0].mu);
-    maxAL.plugTo(swatches[0]).setValue(swatches[0].maxAL);
-    maxAH.plugTo(swatches[0]).setValue(swatches[0].maxAH);
-    selText = "Upper Left";
-    activeSwatch = swatches[0];
-  }
-  else if (key == '2') {
-    for (HapticSwatch s : swatches) {
-      k.unplugFrom(s);
-      b.unplugFrom(s);
-      maxAL.unplugFrom(s);
-      maxAH.unplugFrom(s);
+    k.plugTo(activeSwatch);
+    checkK.plugTo(activeSwatch);
+    b.plugTo(activeSwatch);
+    checkMu.plugTo(activeSwatch);
+    maxAL.plugTo(activeSwatch);
+    checkAL.plugTo(activeSwatch);
+    maxAH.plugTo(activeSwatch);
+    checkAH.plugTo(activeSwatch);
+    
+    refreshKnobs();
+    refreshToggles();
+    switch (keyVal) {
+      case 1:
+        selText = "Upper Left"; break;
+      case 2:
+        selText = "Upper Right"; break;
+      case 3:
+        selText = "Bottom Left"; break;
+      case 4:
+      default:
+        selText = "Bottom Right"; break;
     }
-    k.plugTo(swatches[1]).setValue(swatches[1].k);
-    b.plugTo(swatches[1]).setValue(swatches[1].mu);
-    maxAL.plugTo(swatches[1]).setValue(swatches[1].maxAL);
-    maxAH.plugTo(swatches[1]).setValue(swatches[1].maxAH);
-    selText = "Upper Right";
-    activeSwatch = swatches[1];
-  }
-  else if (key == '3') {
-    for (HapticSwatch s : swatches) {
-      k.unplugFrom(s);
-      b.unplugFrom(s);
-      maxAL.unplugFrom(s);
-      maxAH.unplugFrom(s);
-    }
-    k.plugTo(swatches[2]).setValue(swatches[2].k);
-    b.plugTo(swatches[2]).setValue(swatches[2].mu);
-    maxAL.plugTo(swatches[2]).setValue(swatches[2].maxAL);
-    maxAH.plugTo(swatches[2]).setValue(swatches[2].maxAH);
-    selText = "Bottom Left";
-    activeSwatch = swatches[2];
-  }
-  else if (key == '4') {
-    for (HapticSwatch s : swatches) {
-      k.unplugFrom(s);
-      b.unplugFrom(s);
-      maxAL.unplugFrom(s);
-      maxAH.unplugFrom(s);
-    }
-    k.plugTo(swatches[3]).setValue(swatches[3].k);
-    b.plugTo(swatches[3]).setValue(swatches[3].mu);
-    maxAL.plugTo(swatches[3]).setValue(swatches[3].maxAL);
-    maxAH.plugTo(swatches[3]).setValue(swatches[3].maxAH);
-    selText = "Bottom Right";
-    activeSwatch = swatches[3];
   }
   else if (key == 'w') {
-    saveTable(log, "log.csv");
+    //saveTable(log, "log.csv");
   }
   else if (key == 'q' || key == 'Q' || key == 'a' || key == 'A') {
     // POSITIVE/NEGATIVE REWARD
@@ -297,6 +332,15 @@ void refreshKnobs() {
     b.setValue(activeSwatch.mu);
     maxAL.setValue(activeSwatch.maxAL);
     maxAH.setValue(activeSwatch.maxAH);
+  }
+}
+
+void refreshToggles() {
+  synchronized(activeSwatch) {
+    checkK.setValue(activeSwatch.checkK);
+    checkMu.setValue(activeSwatch.checkMu);
+    checkAL.setValue(activeSwatch.checkAL);
+    checkAH.setValue(activeSwatch.checkAH);
   }
 }
 

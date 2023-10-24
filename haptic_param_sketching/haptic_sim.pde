@@ -27,8 +27,8 @@ class SimulationThread implements Runnable {
         PVector rDiff = posEE.copy().sub(s.center);
         if (rDiff.mag() < s.radius) {
           if (!s.active) {
-            print("Active: ");
-            println(posEE);
+            //print("Active: ");
+            //println(posEE);
             s.active = true;
           }
           // Spring
@@ -61,17 +61,16 @@ class SimulationThread implements Runnable {
           if (posEELast != posEE || forceLast != force) {
             s.touch();
           }
-          forceLast.set(force);
-          posEELast.set(posEE);
         } else {
           if (s.active) {
-            print("Out: ");
-            println(posEE);
+            //print("Out: ");
+            //println(posEE);
             s.active = false;
           }
         }
       }
-      
+      forceLast.set(force);
+      posEELast.set(posEE);
       samp = (samp + 1) % targetRate;
       fEE.set(graphics_to_device(force));
       //TableRow row = log.addRow();
