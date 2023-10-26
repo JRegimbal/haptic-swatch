@@ -23,6 +23,7 @@ ControlP5 cp5;
 Knob k, b, maxAL, maxAH;
 Toggle checkK, checkMu, checkAL, checkAH;
 Toggle manualTog;
+final float nsteps = 10f;
 long currTime, lastTime = 0;
 
 /** 2DIY setup */
@@ -206,6 +207,8 @@ void setup() {
   widget.device_set_parameters();
   panto_setup();
   
+  resetAgents();
+  
   /** Spawn haptics thread */
   SimulationThread st = new SimulationThread();
   UpdateThread ot = new UpdateThread();
@@ -323,6 +326,23 @@ void keyPressed() {
   else if (key == 'z' || key == 'Z') {
     // Switch mode
     manualTog.toggle();
+  }
+  else if (key == '0') {
+    resetAgents();
+    refreshKnobs();
+  }
+}
+
+void resetAgents() {
+  for (HapticSwatch s : swatches) {
+    synchronized(s) {
+      OscMessage msg = new OscMessage("/controller/init");
+      msg.add(s.getId());
+      msg.add(4);
+      msg.add(1f / nsteps);
+      oscp5.send(msg, oscDestination);
+      s.k = s.mu = s.maxAL = s.maxAH = 0f;
+    }
   }
 }
 
