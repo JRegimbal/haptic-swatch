@@ -3,11 +3,6 @@ void setup() {
   size(1000, 650);
   frameRate(baseFrameRate);
   
-  swatches.put(0, new HapticSwatch(-0.02, 0.06, 0.01));
-  swatches.put(1, new HapticSwatch(0.02, 0.06, 0.01));
-  swatches.put(2, new HapticSwatch(-0.02, 0.10, 0.01));
-  swatches.put(3, new HapticSwatch(0.02, 0.10, 0.01));
-  
   filt = new Butter2();
   log = new Table();
   log.addColumn("force");
@@ -15,7 +10,6 @@ void setup() {
   /** Controls */
   cp5 = new ControlP5(this);
   k = cp5.addKnob("k")
-    .plugTo(swatches.get(0))
     .setRange(0, maxK)
     .setValue(0)
     .setPosition(50, 25)
@@ -24,13 +18,11 @@ void setup() {
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
   checkK = cp5.addToggle("checkK")
-    .plugTo(swatches.get(0))
     .setValue(true)
     .setSize(20, 20)
     .setPosition(150, 105)
     .onChange(CL);
   b = cp5.addKnob("mu")
-    .plugTo(swatches.get(0))
     .setRange(0, maxB)
     .setValue(0) // unitless
     .setPosition(50, 150)
@@ -39,13 +31,11 @@ void setup() {
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
   checkMu = cp5.addToggle("checkMu")
-    .plugTo(swatches.get(0))
     .setValue(true)
     .setSize(20, 20)
     .setPosition(150, 230)
     .onChange(CL);
   maxAL = cp5.addKnob("maxAL")
-    .plugTo(swatches.get(0))
     .setRange(0, MAL)
     .setValue(0)
     .setPosition(50, 275)
@@ -54,13 +44,11 @@ void setup() {
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
   checkAL = cp5.addToggle("checkAL")
-    .plugTo(swatches.get(0))
     .setValue(true)
     .setSize(20, 20)
     .setPosition(150, 355)
     .onChange(CL);
   maxAH = cp5.addKnob("maxAH")
-    .plugTo(swatches.get(0))
     .setRange(0, MAH)
     .setValue(0)
     .setPosition(50, 400)
@@ -69,7 +57,6 @@ void setup() {
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
   checkAH = cp5.addToggle("checkAH")
-    .plugTo(swatches.get(0))
     .setValue(true)
     .setSize(20, 20)
     .setPosition(150, 480)

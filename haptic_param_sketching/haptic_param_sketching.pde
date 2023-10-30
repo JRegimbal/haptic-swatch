@@ -71,9 +71,9 @@ PVector fText = new PVector(0, 0);
 HashMap<Integer, HapticSwatch> swatches = new HashMap();
 
 
-HapticSwatch activeSwatch = swatches.get(0);
+HapticSwatch activeSwatch = null;
 
-String selText = "Swatch 0";
+String selText = "NONE";
 float maxSpeed = 0f;
 
 /** OSC */
@@ -87,31 +87,33 @@ final float maxK=250, maxB=0.5, MAL=1f, MAH=1f;
 
 CallbackListener CL = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {
-    Controller c = evt.getController();
-    OscMessage msg = new OscMessage("/controller/activate");
-    synchronized(activeSwatch) {
-      msg.add(activeSwatch.getId());
-      if (c.equals(checkK)) {
-        println("checkK");
-        msg.add(0);
-        msg.add(activeSwatch.checkK);
-      } else if (c.equals(checkMu)) {
-        println("checkMu");
-        msg.add(1);
-        msg.add(activeSwatch.checkMu);
-      } else if (c.equals(checkAL)) {
-        println("checkAL");
-        msg.add(2);
-        msg.add(activeSwatch.checkAL);
-      } else if (c.equals(checkAH)) {
-        println("checkAH");
-        msg.add(3);
-        msg.add(activeSwatch.checkAH);
-      } else {
-        println("ERR - unknown controller");
-        return;
+    if (activeSwatch != null) {
+      Controller c = evt.getController();
+      OscMessage msg = new OscMessage("/controller/activate");
+      synchronized(activeSwatch) {
+        msg.add(activeSwatch.getId());
+        if (c.equals(checkK)) {
+          println("checkK");
+          msg.add(0);
+          msg.add(activeSwatch.checkK);
+        } else if (c.equals(checkMu)) {
+          println("checkMu");
+          msg.add(1);
+          msg.add(activeSwatch.checkMu);
+        } else if (c.equals(checkAL)) {
+          println("checkAL");
+          msg.add(2);
+          msg.add(activeSwatch.checkAL);
+        } else if (c.equals(checkAH)) {
+          println("checkAH");
+          msg.add(3);
+          msg.add(activeSwatch.checkAH);
+        } else {
+          println("ERR - unknown controller");
+          return;
+        }
+        oscp5.send(msg, oscDestination);
       }
-      oscp5.send(msg, oscDestination);
     }
   }
 };
@@ -153,6 +155,10 @@ void mouseClicked() {
       if (!clickedInHandle) {
         handleBuffer.clear();
       }
+    } else if (mode == InputMode.CIRCLE) {
+      HapticSwatch s = new HapticSwatch(mouse.x, mouse.y, 0.01);
+      swatches.put(s.getId(), s);
+      activateSwatch(s);
     }
   }
 }
@@ -222,18 +228,20 @@ void keyPressed() {
   }
   else if (key == 'q' || key == 'Q' || key == 'a' || key == 'A') {
     // POSITIVE/NEGATIVE REWARD
-    synchronized(activeSwatch) {
-      OscMessage msg = new OscMessage("/controller/reward");
-      msg.add(activeSwatch.getId());
-      if (key == 'q' || key == 'Q') {
-        msg.add(1);
-      } else {
-        msg.add(-1);
+    if (activeSwatch != null) {
+      synchronized(activeSwatch) {
+        OscMessage msg = new OscMessage("/controller/reward");
+        msg.add(activeSwatch.getId());
+        if (key == 'q' || key == 'Q') {
+          msg.add(1);
+        } else {
+          msg.add(-1);
+        }
+        oscp5.send(msg, oscDestination);
+        // TODO Bootstrap (handle in agent?)
       }
-      oscp5.send(msg, oscDestination);
-      // TODO Bootstrap (handle in agent?)
+      println("Reward sent");
     }
-    println("Reward sent");
   }
   else if (key == 'z' || key == 'Z') {
     // Switch mode
@@ -259,20 +267,24 @@ void resetAgents() {
 }
 
 void refreshKnobs() {
-  synchronized(activeSwatch) {
-    k.setValue(activeSwatch.k);
-    b.setValue(activeSwatch.mu);
-    maxAL.setValue(activeSwatch.maxAL);
-    maxAH.setValue(activeSwatch.maxAH);
+  if (activeSwatch != null) {
+    synchronized(activeSwatch) {
+      k.setValue(activeSwatch.k);
+      b.setValue(activeSwatch.mu);
+      maxAL.setValue(activeSwatch.maxAL);
+      maxAH.setValue(activeSwatch.maxAH);
+    }
   }
 }
 
 void refreshToggles() {
-  synchronized(activeSwatch) {
-    checkK.setValue(activeSwatch.checkK);
-    checkMu.setValue(activeSwatch.checkMu);
-    checkAL.setValue(activeSwatch.checkAL);
-    checkAH.setValue(activeSwatch.checkAH);
+  if (activeSwatch != null) {
+    synchronized(activeSwatch) {
+      checkK.setValue(activeSwatch.checkK);
+      checkMu.setValue(activeSwatch.checkMu);
+      checkAL.setValue(activeSwatch.checkAL);
+      checkAH.setValue(activeSwatch.checkAH);
+    }
   }
 }
 
@@ -290,7 +302,7 @@ void mode(int value) {
   if (oldMode != mode) {
     // Would need logic for polygons or whatever
     if ((oldMode == InputMode.MOVE || oldMode == InputMode.SELECT) && (mode != InputMode.MOVE && mode != InputMode.SELECT)) {
-      handleBuffer = null;
+      handleBuffer.clear();
       moveInterimCoordinates = null;
     }
   }
