@@ -137,6 +137,16 @@ void exit() {
 void draw() {
   if (renderingForce == false) {
     background(255);
+    
+    PVector mouse = pixel_to_graphics(mouseX, mouseY);
+    if (mousePressed && mode == InputMode.MOVE && moveInterimCoordinates != null) {
+      for (Handle h : handleBuffer) {
+        h.pos.x += mouse.x - moveInterimCoordinates.x;
+        h.pos.y += mouse.y - moveInterimCoordinates.y;
+      }
+      moveInterimCoordinates = mouse;
+    }
+    
     for (HapticSwatch s : swatches) {
       s.display();
     }

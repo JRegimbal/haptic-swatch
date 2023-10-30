@@ -156,6 +156,35 @@ void mouseClicked() {
   }
 }
 
+void mouseReleased() {
+  moveInterimCoordinates = null;
+}
+
+void mousePressed(MouseEvent event) {
+  if (mouseInWorkspace()) {
+    PVector mouse = pixel_to_graphics(mouseX, mouseY);
+    if (mode == InputMode.MOVE) {
+      if (moveInterimCoordinates == null) {
+        // Starting new drag (possibly!)
+        for (HapticSwatch s: swatches) {
+          for (Handle h : s.getHandles()) {
+            if (dist(mouse.x, mouse.y, h.pos.x, h.pos.y) < h.r) {
+              if (!handleBuffer.contains(h)) {
+                handleBuffer.add(h);
+                break;
+              }
+            }
+          }
+        }
+        if (handleBuffer.size() > 0) {
+          // Start drag!
+          moveInterimCoordinates = mouse;
+        }
+      }
+    }
+  }
+}
+
 void keyPressed() {
   if (key == 'r' || key == 'R') {
     maxSpeed = 0;
