@@ -67,16 +67,13 @@ PVector fText = new PVector(0, 0);
   new HapticSwatch(-0.02, 0.10, 0.01),
   new HapticSwatch(0.02, 0.10, 0.01)
 };*/
-ArrayList<HapticSwatch> swatches = new ArrayList(List.of(
-  new HapticSwatch(-0.02, 0.06, 0.01),
-  new HapticSwatch(0.02, 0.06, 0.01),
-  new HapticSwatch(-0.02, 0.10, 0.01),
-  new HapticSwatch(0.02, 0.10, 0.01)
-  ));
+
+HashMap<Integer, HapticSwatch> swatches = new HashMap();
+
 
 HapticSwatch activeSwatch = swatches.get(0);
 
-String selText = "Upper Left";
+String selText = "Swatch 0";
 float maxSpeed = 0f;
 
 /** OSC */
@@ -129,7 +126,7 @@ void mouseClicked() {
     PVector mouse = pixel_to_graphics(mouseX, mouseY);
     if (mode == InputMode.SELECT) {
       boolean clickedInHandle = false;
-      for (HapticSwatch s : swatches) {
+      for (HapticSwatch s : swatches.values()) {
         for (Handle h : s.getHandles()) {
           if (dist(mouse.x, mouse.y, h.pos.x, h.pos.y) < h.r) {
             if (keyPressed && key == CODED && keyCode == SHIFT) {
@@ -147,6 +144,10 @@ void mouseClicked() {
             clickedInHandle = true;
             break;
           }
+        }
+        if (clickedInHandle) {
+          activateSwatch(s);
+          break;
         }
       }
       if (!clickedInHandle) {
@@ -166,7 +167,7 @@ void mousePressed(MouseEvent event) {
     if (mode == InputMode.MOVE) {
       if (moveInterimCoordinates == null) {
         // Starting new drag (possibly!)
-        for (HapticSwatch s: swatches) {
+        for (HapticSwatch s: swatches.values()) {
           for (Handle h : s.getHandles()) {
             if (dist(mouse.x, mouse.y, h.pos.x, h.pos.y) < h.r) {
               if (!handleBuffer.contains(h)) {
@@ -185,48 +186,39 @@ void mousePressed(MouseEvent event) {
   }
 }
 
+void activateSwatch(HapticSwatch swatch) {
+  activeSwatch = swatch;
+  for (HapticSwatch s : swatches.values()) {
+    k.unplugFrom(s);
+    checkK.unplugFrom(s);
+    b.unplugFrom(s);
+    checkMu.unplugFrom(s);
+    maxAL.unplugFrom(s);
+    checkAL.unplugFrom(s);
+    maxAH.unplugFrom(s);
+    checkAH.unplugFrom(s);
+  }
+  k.plugTo(activeSwatch);
+  checkK.plugTo(activeSwatch);
+  b.plugTo(activeSwatch);
+  checkMu.plugTo(activeSwatch);
+  maxAL.plugTo(activeSwatch);
+  checkAL.plugTo(activeSwatch);
+  maxAH.plugTo(activeSwatch);
+  checkAH.plugTo(activeSwatch);
+  
+  refreshKnobs();
+  refreshToggles();
+  selText = "Swatch " + activeSwatch.getId();
+}
+
 void keyPressed() {
   if (key == 'r' || key == 'R') {
     maxSpeed = 0;
   }
   else if (key == '1' || key == '2' || key == '3' || key == '4') {
     int keyVal = int(key) - 48;
-    activeSwatch = swatches.get(keyVal - 1);
-    for (HapticSwatch s : swatches) {
-      k.unplugFrom(s);
-      checkK.unplugFrom(s);
-      b.unplugFrom(s);
-      checkMu.unplugFrom(s);
-      maxAL.unplugFrom(s);
-      checkAL.unplugFrom(s);
-      maxAH.unplugFrom(s);
-      checkAH.unplugFrom(s);
-    }
-    k.plugTo(activeSwatch);
-    checkK.plugTo(activeSwatch);
-    b.plugTo(activeSwatch);
-    checkMu.plugTo(activeSwatch);
-    maxAL.plugTo(activeSwatch);
-    checkAL.plugTo(activeSwatch);
-    maxAH.plugTo(activeSwatch);
-    checkAH.plugTo(activeSwatch);
-    
-    refreshKnobs();
-    refreshToggles();
-    switch (keyVal) {
-      case 1:
-        selText = "Upper Left"; break;
-      case 2:
-        selText = "Upper Right"; break;
-      case 3:
-        selText = "Bottom Left"; break;
-      case 4:
-      default:
-        selText = "Bottom Right"; break;
-    }
-  }
-  else if (key == 'w') {
-    //saveTable(log, "log.csv");
+    activateSwatch(swatches.get(keyVal - 1));
   }
   else if (key == 'q' || key == 'Q' || key == 'a' || key == 'A') {
     // POSITIVE/NEGATIVE REWARD
@@ -254,7 +246,7 @@ void keyPressed() {
 }
 
 void resetAgents() {
-  for (HapticSwatch s : swatches) {
+  for (HapticSwatch s : swatches.values()) {
     synchronized(s) {
       OscMessage msg = new OscMessage("/controller/init");
       msg.add(s.getId());

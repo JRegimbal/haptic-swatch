@@ -2,6 +2,12 @@
 void setup() {
   size(1000, 650);
   frameRate(baseFrameRate);
+  
+  swatches.put(0, new HapticSwatch(-0.02, 0.06, 0.01));
+  swatches.put(1, new HapticSwatch(0.02, 0.06, 0.01));
+  swatches.put(2, new HapticSwatch(-0.02, 0.10, 0.01));
+  swatches.put(3, new HapticSwatch(0.02, 0.10, 0.01));
+  
   filt = new Butter2();
   log = new Table();
   log.addColumn("force");
@@ -138,6 +144,7 @@ void draw() {
   if (renderingForce == false) {
     background(255);
     
+    // Process move action since last frame
     PVector mouse = pixel_to_graphics(mouseX, mouseY);
     if (mousePressed && mode == InputMode.MOVE && moveInterimCoordinates != null) {
       for (Handle h : handleBuffer) {
@@ -147,9 +154,12 @@ void draw() {
       moveInterimCoordinates = mouse;
     }
     
-    for (HapticSwatch s : swatches) {
+    // Show swatches
+    for (HapticSwatch s : swatches.values()) {
       s.display();
     }
+    
+    // Show 2DIY
     update_animation(angles.x * radsPerDegree, angles.y * radsPerDegree, posEE.x, posEE.y);
     fill(0, 0, 0);
     textAlign(RIGHT);
@@ -161,6 +171,7 @@ void draw() {
     text(selText, 100, 20);
     fill(255, 255, 255);
     
+    // Process change in autonomous/manual update mode
     if (lastMode != isManual) {
       if (isManual) {
         k.unlock();

@@ -22,7 +22,7 @@ class SimulationThread implements Runnable {
       if (speed > maxSpeed) maxSpeed = speed;
       
       // Calculate force
-      for (HapticSwatch s : swatches) {
+      for (HapticSwatch s : swatches.values()) {
         force.add(s.force(posEE, velEE, samp));
       }
       forceLast.set(force);

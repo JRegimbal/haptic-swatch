@@ -1,7 +1,7 @@
 /** OSC Data update thread */
 class UpdateThread implements Runnable {
   void run() {
-    for (HapticSwatch s : swatches) {
+    for (HapticSwatch s : swatches.values()) {
       synchronized (s) {
         if (s.isActive()) {
           if (isManual) {
