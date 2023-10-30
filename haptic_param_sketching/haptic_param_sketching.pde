@@ -23,7 +23,7 @@ ControlP5 cp5;
 Knob k, b, maxAL, maxAH;
 Toggle checkK, checkMu, checkAL, checkAH;
 Toggle manualTog;
-final float nsteps = 10f;
+final float nsteps = 20f;
 long currTime, lastTime = 0;
 
 /** 2DIY setup */
@@ -213,7 +213,7 @@ void setup() {
   SimulationThread st = new SimulationThread();
   UpdateThread ot = new UpdateThread();
   handle = scheduler.scheduleAtFixedRate(st, 1000, (long)(1000000f / targetRate), MICROSECONDS);
-  scheduler.scheduleAtFixedRate(ot, 1, 1000, MILLISECONDS);
+  scheduler.scheduleAtFixedRate(ot, 1, 500, MILLISECONDS);
 }
 
 void exit() {
