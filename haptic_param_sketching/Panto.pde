@@ -132,3 +132,11 @@ PShape create_ellipse(float x, float y, float a, float b) {
   b = pixelsPerMeter * b;
   return createShape(ELLIPSE, deviceOrigin.x + x, deviceOrigin.y + y, 2*a, 2*b);
 }
+
+PShape create_line(float x1, float y1, float x2, float y2) {
+  x1 = pixelsPerMeter * x1;
+  y1 = pixelsPerMeter * y1;
+  x2 = pixelsPerMeter * x2;
+  y2 = pixelsPerMeter * y2;
+  return createShape(LINE, deviceOrigin.x + x1, deviceOrigin.y + y1, deviceOrigin.x + x2, deviceOrigin.y + y2);
+}

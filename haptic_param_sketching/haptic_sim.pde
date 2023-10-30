@@ -23,58 +23,12 @@ class SimulationThread implements Runnable {
       
       // Calculate force
       for (HapticSwatch s : swatches) {
-        PVector forceTmp = new PVector(0, 0);
-        PVector rDiff = posEE.copy().sub(s.center);
-        if (rDiff.mag() < s.radius) {
-          if (!s.active) {
-            //print("Active: ");
-            //println(posEE);
-            s.active = true;
-          }
-          // Spring
-          rDiff.setMag(s.radius - rDiff.mag());
-          forceTmp.add(rDiff.mult(s.k));
-          // Friction
-          //final float vTh = 0.25; // vibes based, m/s
-          //final float vTh = 0.015;
-          final float vTh = 0.1;
-          final float mass = 0.25; // kg
-          final float fnorm = mass * 9.81; // kg * m/s^2 (N)
-          final float b = fnorm * s.mu / vTh; // kg / s
-          if (speed < vTh) {
-            forceTmp.add(velEE.copy().mult(-b));
-          } else {
-            forceTmp.add(velEE.copy().setMag(-s.mu * fnorm));
-          }
-          // Texture
-          final float maxV = vTh;
-          fText.set(velEE.copy().rotate(HALF_PI).setMag(
-              min(s.maxAH, speed * s.maxAH / maxV) * sin(textureConst * 150f * samp) +
-              min(s.maxAL, speed * s.maxAL / maxV) * sin(textureConst * 25f * samp)
-          ));
-          forceTmp.add(fText);
-          force.add(forceTmp);
-          //if (forceTmp.mag() > 0) {
-            s.touch();
-            force.add(forceTmp);
-          //}
-          if (posEELast != posEE || forceLast != force) {
-            s.touch();
-          }
-        } else {
-          if (s.active) {
-            //print("Out: ");
-            //println(posEE);
-            s.active = false;
-          }
-        }
+        force.add(s.force(posEE, velEE, samp));
       }
       forceLast.set(force);
       posEELast.set(posEE);
       samp = (samp + 1) % targetRate;
       fEE.set(graphics_to_device(force));
-      //TableRow row = log.addRow();
-      //row.setFloat("force", currTime-lastTime);
     }
     torques.set(widget.set_device_torques(fEE.array()));
     widget.device_write_torques();

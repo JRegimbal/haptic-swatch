@@ -28,7 +28,7 @@ class UpdateThread implements Runnable {
 
 void oscEvent(OscMessage message) {
   int ID = message.get(0).intValue();  // Pure Data only has floats no ints - temporary
-  HapticSwatch swatch = swatches[ID];
+  HapticSwatch swatch = swatches.get(ID);
   synchronized(swatch) {
     swatch.k = message.get(1).floatValue() * maxK;
     swatch.mu = message.get(2).floatValue() * maxB;

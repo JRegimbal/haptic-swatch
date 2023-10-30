@@ -16,6 +16,13 @@ public enum HaplyVersion {
   V3_1
 }
 
+public enum InputMode {
+  SELECT,
+  MOVE,
+  CIRCLE
+}
+
+InputMode mode = InputMode.SELECT;
 final HaplyVersion version = HaplyVersion.V3_1;
 boolean isManual = true;
 boolean lastMode = isManual;
@@ -39,6 +46,8 @@ long baseFrameRate = 120;
 ScheduledFuture<?> handle;
 Filter filt;
 Table log;
+final float xExtent = 0.065f;
+final float yExtent = 0.15f;
 
 PVector angles = new PVector(0, 0);
 PVector torques = new PVector(0, 0);
@@ -52,14 +61,20 @@ final float textureConst = 2*PI/targetRate;
 PVector fText = new PVector(0, 0);
 
 /** Params */
-HapticSwatch[] swatches = {
+/*(HapticSwatch[] swatches = {
   new HapticSwatch(-0.02, 0.06, 0.01),
   new HapticSwatch(0.02, 0.06, 0.01),
   new HapticSwatch(-0.02, 0.10, 0.01),
   new HapticSwatch(0.02, 0.10, 0.01)
-};
+};*/
+ArrayList<HapticSwatch> swatches = new ArrayList(List.of(
+  new HapticSwatch(-0.02, 0.06, 0.01),
+  new HapticSwatch(0.02, 0.06, 0.01),
+  new HapticSwatch(-0.02, 0.10, 0.01),
+  new HapticSwatch(0.02, 0.10, 0.01)
+  ));
 
-HapticSwatch activeSwatch = swatches[0];
+HapticSwatch activeSwatch = swatches.get(0);
 
 String selText = "Upper Left";
 float maxSpeed = 0f;
@@ -104,163 +119,39 @@ CallbackListener CL = new CallbackListener() {
   }
 };
 
-/** Main thread */
-void setup() {
-  size(1000, 650);
-  frameRate(baseFrameRate);
-  filt = new Butter2();
-  log = new Table();
-  log.addColumn("force");
-  
-  /** Controls */
-  cp5 = new ControlP5(this);
-  k = cp5.addKnob("k")
-    .plugTo(swatches[0])
-    .setRange(0, maxK)
-    .setValue(0)
-    .setPosition(50, 25)
-    .setRadius(50)
-    .setCaptionLabel("Spring k")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
-  checkK = cp5.addToggle("checkK")
-    .plugTo(swatches[0])
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(150, 105)
-    .onChange(CL);
-  b = cp5.addKnob("mu")
-    .plugTo(swatches[0])
-    .setRange(0, maxB)
-    .setValue(0) // unitless
-    .setPosition(50, 150)
-    .setRadius(50)
-    .setCaptionLabel("Friction mu")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
-  checkMu = cp5.addToggle("checkMu")
-    .plugTo(swatches[0])
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(150, 230)
-    .onChange(CL);
-  maxAL = cp5.addKnob("maxAL")
-    .plugTo(swatches[0])
-    .setRange(0, MAL)
-    .setValue(0)
-    .setPosition(50, 275)
-    .setRadius(50)
-    .setCaptionLabel("Low Texture Amp. (N)")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
-  checkAL = cp5.addToggle("checkAL")
-    .plugTo(swatches[0])
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(150, 355)
-    .onChange(CL);
-  maxAH = cp5.addKnob("maxAH")
-    .plugTo(swatches[0])
-    .setRange(0, MAH)
-    .setValue(0)
-    .setPosition(50, 400)
-    .setRadius(50)
-    .setCaptionLabel("Texture Amp. (N)")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
-  checkAH = cp5.addToggle("checkAH")
-    .plugTo(swatches[0])
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(150, 480)
-    .onChange(CL);
-  manualTog = cp5.addToggle("isManual")
-    .setPosition(75, 525)
-    .setCaptionLabel("Manual/Autonomous")
-    .setColorCaptionLabel(color(20, 20, 20));
-    
-  /** Haply */
-  haplyBoard = new Board(this, Serial.list()[0], 0);
-  widget = new Device(widgetID, haplyBoard);
-  if (version == HaplyVersion.V2) {
-    pantograph = new Pantograph(2);
-    widget.set_mechanism(pantograph);
-    widget.add_actuator(1, CCW, 2);
-    widget.add_actuator(2, CW, 1);
-    widget.add_encoder(1, CCW, 241, 10752, 2);
-    widget.add_encoder(2, CW, -61, 10752, 1);
-  } else if (version == HaplyVersion.V3 || version == HaplyVersion.V3_1) {
-    pantograph = new Pantograph(3);
-    widget.set_mechanism(pantograph);
-    widget.add_actuator(1, CCW, 2);
-    widget.add_actuator(2, CCW, 1);
-    if (version == HaplyVersion.V3) {
-      widget.add_encoder(1, CCW, 97.23, 2048*2.5*1.0194*1.0154, 2);   //right in theory
-      widget.add_encoder(2, CCW, 82.77, 2048*2.5*1.0194, 1);    //left in theory
-    } else {
-      //widget.add_encoder(1, CCW, 166.58, 2048*2.5*1.0194*1.0154, 2);   //right in theory
-      //widget.add_encoder(2, CCW, 11.11, 2048*2.5*1.0194, 1);    //left in theory
-      widget.add_encoder(1, CCW, 168, 4880, 2);   //right in theory
-      widget.add_encoder(2, CCW, 12, 4880, 1);    //left in theory
-    }
-  }
-  widget.device_set_parameters();
-  panto_setup();
-  
-  resetAgents();
-  
-  /** Spawn haptics thread */
-  SimulationThread st = new SimulationThread();
-  UpdateThread ot = new UpdateThread();
-  handle = scheduler.scheduleAtFixedRate(st, 1000, (long)(1000000f / targetRate), MICROSECONDS);
-  scheduler.scheduleAtFixedRate(ot, 1, 500, MILLISECONDS);
+boolean mouseInWorkspace() {
+  PVector mouse = pixel_to_graphics(mouseX, mouseY);
+  return (mouse.x > -xExtent && mouse.x < xExtent && mouse.y < yExtent && mouse.y > 0f);
 }
 
-void exit() {
-  handle.cancel(true);
-  scheduler.shutdown();
-  widget.set_device_torques(new float[]{0, 0});
-  widget.device_write_torques();
-  saveTable(log, "log.csv");
-  OscMessage msg = new OscMessage("/quit");
-  oscp5.send(msg, oscDestination);
-  println("Quit");
-  super.exit();
-}
-
-void draw() {
-  if (renderingForce == false) {
-    background(255);
-    for (HapticSwatch s : swatches) {
-      shape(create_ellipse(s.center.x, s.center.y, s.radius, s.radius));
-    }
-    update_animation(angles.x * radsPerDegree, angles.y * radsPerDegree, posEE.x, posEE.y);
-    fill(0, 0, 0);
-    textAlign(RIGHT);
-    text("Delay (us): " + nf((int)((currTime - lastTime) / 1000), 4), 800, 40);
-    text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), 800, 60);
-    text("Max speed (mm/s): " + nf((int)(maxSpeed * 1000), 3), 800, 80);
-    text("Texture (N): " + nf((int)fText.mag()), 800, 100);
-    textAlign(CENTER);
-    text(selText, 100, 20);
-    fill(255, 255, 255);
-    
-    if (lastMode != isManual) {
-      if (isManual) {
-        k.unlock();
-        b.unlock();
-        maxAL.unlock();
-        maxAH.unlock();
-      } else {
-        k.lock();
-        b.lock();
-        maxAL.lock();
-        maxAH.lock();
+void mouseClicked() {
+  if (mouseInWorkspace()) {
+    PVector mouse = pixel_to_graphics(mouseX, mouseY);
+    if (mode == InputMode.SELECT) {
+      boolean clickedInHandle = false;
+      for (HapticSwatch s : swatches) {
+        for (Handle h : s.getHandles()) {
+          if (dist(mouse.x, mouse.y, h.pos.x, h.pos.y) < h.r) {
+            if (keyPressed && key == CODED && keyCode == SHIFT) {
+              if (!handleBuffer.contains(h)) {
+                handleBuffer.add(h);
+              } else {
+                handleBuffer.remove(h);
+              }
+            } else {
+              if (!handleBuffer.contains(h)) {
+                handleBuffer.clear();
+                handleBuffer.add(h);
+              }
+            }
+            clickedInHandle = true;
+            break;
+          }
+        }
       }
-      OscMessage msg = new OscMessage("/uistate/setAutonomous");
-      msg.add(isManual);
-      oscp5.send(msg, oscDestination);
-      lastMode = isManual;
+      if (!clickedInHandle) {
+        handleBuffer.clear();
+      }
     }
   }
 }
@@ -271,7 +162,7 @@ void keyPressed() {
   }
   else if (key == '1' || key == '2' || key == '3' || key == '4') {
     int keyVal = int(key) - 48;
-    activeSwatch = swatches[keyVal - 1];
+    activeSwatch = swatches.get(keyVal - 1);
     for (HapticSwatch s : swatches) {
       k.unplugFrom(s);
       checkK.unplugFrom(s);
@@ -362,6 +253,33 @@ void refreshToggles() {
     checkAL.setValue(activeSwatch.checkAL);
     checkAH.setValue(activeSwatch.checkAH);
   }
+}
+
+void mode(int value) {
+  InputMode oldMode = mode;
+  if (value == 0) {
+    mode = InputMode.SELECT;
+  } else if (value == 1) {
+    mode = InputMode.MOVE;
+  } else if (value == 2) {
+    mode = InputMode.CIRCLE;
+  } else {
+    println("Unknown mode value: " + value);
+  }
+  if (oldMode != mode) {
+    // Would need logic for polygons or whatever
+    if ((oldMode == InputMode.MOVE || oldMode == InputMode.SELECT) && (mode != InputMode.MOVE && mode != InputMode.SELECT)) {
+      handleBuffer = null;
+      moveInterimCoordinates = null;
+    }
+  }
+}
+
+PVector pixel_to_graphics(float x, float y) {
+  return new PVector(
+    (x - deviceOrigin.x) / pixelsPerMeter,
+    (y - deviceOrigin.y) / pixelsPerMeter
+    );
 }
 
 /** Helper */
