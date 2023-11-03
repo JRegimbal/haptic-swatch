@@ -158,6 +158,13 @@ void mouseClicked() {
     } else if (mode == InputMode.CIRCLE) {
       HapticSwatch s = new HapticSwatch(mouse.x, mouse.y, 0.01);
       swatches.put(s.getId(), s);
+      OscMessage msg = new OscMessage("/controller/init");
+      msg.add(s.getId());
+      msg.add(4);
+      msg.add(1f / nsteps);
+      oscp5.send(msg, oscDestination);
+      s.k = s.mu = s.maxAL = s.maxAH = 0f;
+      delay(150); // race condition avoidance (I don't love this)
       activateSwatch(s);
     }
   }
