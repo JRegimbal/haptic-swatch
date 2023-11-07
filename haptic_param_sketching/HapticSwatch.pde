@@ -32,6 +32,7 @@ class HapticSwatch {
   protected float lastK, lastMu, lastAL, lastAH;
   public boolean checkK, checkMu, checkAL, checkAH;
   private int id;
+  public long elapsed = 0;
   
   static final long inactiveTime = 500000000; // 500 ms 
   public long lastForceTime = 0;
@@ -106,11 +107,10 @@ class HapticSwatch {
       }
       // Texture
       final float maxV = vTh;
-      fText.set(velEE.copy().rotate(HALF_PI).setMag(
+      forceTmp.add(velEE.copy().rotate(HALF_PI).setMag(
           min(maxAH, speed * maxAH / maxV) * sin(textureConst * 150f * samp) +
           min(maxAL, speed * maxAL / maxV) * sin(textureConst * 25f * samp)
       ));
-      forceTmp.add(fText);
       touch();
     } else {
       if (active) {

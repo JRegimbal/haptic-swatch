@@ -63,8 +63,8 @@ PVector velEE = new PVector(0, 0);
 PVector fEE = new PVector(0, 0);
 
 final float targetRate = 1000f;
+final long controlElapsedMs = 500;
 final float textureConst = 2*PI/targetRate;
-PVector fText = new PVector(0, 0);
 
 /** Params */
 /*(HapticSwatch[] swatches = {
@@ -252,19 +252,22 @@ void keyPressed() {
   }*/
   else if (key == 'q' || key == 'Q' || key == 'a' || key == 'A') {
     // POSITIVE/NEGATIVE REWARD
-    if (activeSwatch != null) {
-      synchronized(activeSwatch) {
-        OscMessage msg = new OscMessage("/controller/reward");
-        msg.add(activeSwatch.getId());
-        if (key == 'q' || key == 'Q') {
-          msg.add(1);
-        } else {
-          msg.add(-1);
+    if (rwMode == RewardMode.EXPLICIT) {
+      if (activeSwatch != null) {
+        synchronized(activeSwatch) {
+          OscMessage msg = new OscMessage("/controller/reward");
+          msg.add(activeSwatch.getId());
+          if (key == 'q' || key == 'Q') {
+            msg.add(1);
+          } else {
+            msg.add(-1);
+          }
+          oscp5.send(msg, oscDestination);
         }
-        oscp5.send(msg, oscDestination);
-        // TODO Bootstrap (handle in agent?)
+        println("Reward sent");
       }
-      println("Reward sent");
+    } else {
+      println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
     }
   }
   else if (key == 'z' || key == 'Z') {

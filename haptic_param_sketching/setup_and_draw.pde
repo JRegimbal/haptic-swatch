@@ -135,7 +135,7 @@ void setup() {
   SimulationThread st = new SimulationThread();
   UpdateThread ot = new UpdateThread();
   handle = scheduler.scheduleAtFixedRate(st, 1000, (long)(1000000f / targetRate), MICROSECONDS);
-  scheduler.scheduleAtFixedRate(ot, 1, 500, MILLISECONDS);
+  scheduler.scheduleAtFixedRate(ot, 1, controlElapsedMs, MILLISECONDS);
 }
 
 void exit() {
@@ -173,10 +173,10 @@ void draw() {
     update_animation(angles.x * radsPerDegree, angles.y * radsPerDegree, posEE.x, posEE.y);
     fill(0, 0, 0);
     textAlign(RIGHT);
-    text("Delay (us): " + nf((int)((currTime - lastTime) / 1000), 4), 800, 40);
-    text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), 800, 60);
-    text("Max speed (mm/s): " + nf((int)(maxSpeed * 1000), 3), 800, 80);
-    text("Texture (N): " + nf((int)fText.mag()), 800, 100);
+    text("Delay (us): " + nf((int)((currTime - lastTime) / 1000), 4), 900, 40);
+    text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), 900, 60);
+    text("Max speed (mm/s): " + nf((int)(maxSpeed * 1000), 3), 900, 80);
+    text("Texture (N): " + nf((int)fEE.mag()), 900, 100);
     textAlign(CENTER);
     text(selText, 100, 20);
     fill(255, 255, 255);

@@ -3,24 +3,35 @@ class UpdateThread implements Runnable {
   void run() {
     for (HapticSwatch s : swatches.values()) {
       synchronized (s) {
-        if (s.isActive()) {
-          if (isManual) {
-            OscMessage msg = new OscMessage("/controller/manualSet");
-            msg.add(s.getId());
-            msg.add(s.k / maxK);
-            msg.add(s.mu / maxB);
-            msg.add(s.maxAL / MAL);
-            msg.add(s.maxAH / MAH);
-            oscp5.send(msg, oscDestination);
-            // TODO check if we should update only once or on each active timestep
-          } else {
-            // TODO Obtain action a from agent
-            OscMessage msg = new OscMessage("/controller/step");
-            msg.add(s.getId());
-            oscp5.send(msg, oscDestination);
-            // Action applied in oscEvent callback
+        if (rwMode == RewardMode.EXPLICIT) {
+          if (s.isActive()) {
+            if (isManual) {
+              OscMessage msg = new OscMessage("/controller/manualSet");
+              msg.add(s.getId());
+              msg.add(s.k / maxK);
+              msg.add(s.mu / maxB);
+              msg.add(s.maxAL / MAL);
+              msg.add(s.maxAH / MAH);
+              oscp5.send(msg, oscDestination);
+              // TODO check if we should update only once or on each active timestep
+            } else {
+              // TODO Obtain action a from agent
+              OscMessage msg = new OscMessage("/controller/step");
+              msg.add(s.getId());
+              oscp5.send(msg, oscDestination);
+              // Action applied in oscEvent callback
+            }
+          } /* else { println("Not Active"); } */
+        } else if (rwMode == RewardMode.ATTENTION) {
+          if (s.newState()) {
+            // Process reward
+            s.elapsed = 0;
+            s.refresh();
+          } else if (s.isActive()) {
+            s.elapsed += controlElapsedMs;
+            println(s.elapsed);
           }
-        } /* else { println("Not Active"); } */
+        } else { println("ERR: Unknown reward mode"); }
       }
     }
   }
