@@ -22,14 +22,20 @@ public enum InputMode {
   CIRCLE
 }
 
+public enum RewardMode {
+  ATTENTION,  // Is based on how long a user interacts with the experience until a new one is requested
+  EXPLICIT    // Is based on explicit reward signals sent by the user
+}
+
 InputMode mode = InputMode.SELECT;
 final HaplyVersion version = HaplyVersion.V3_1;
+RewardMode rwMode = RewardMode.EXPLICIT;
 boolean isManual = true;
 boolean lastMode = isManual;
 ControlP5 cp5;
 Knob k, b, maxAL, maxAH;
 Toggle checkK, checkMu, checkAL, checkAH;
-Toggle manualTog;
+Toggle manualTog, rewardModeToggle;
 final float nsteps = 20f;
 long currTime, lastTime = 0;
 
@@ -211,28 +217,39 @@ void activateSwatch(HapticSwatch swatch) {
     maxAH.unplugFrom(s);
     checkAH.unplugFrom(s);
   }
-  k.plugTo(activeSwatch);
-  checkK.plugTo(activeSwatch);
-  b.plugTo(activeSwatch);
-  checkMu.plugTo(activeSwatch);
-  maxAL.plugTo(activeSwatch);
-  checkAL.plugTo(activeSwatch);
-  maxAH.plugTo(activeSwatch);
-  checkAH.plugTo(activeSwatch);
+  if (activeSwatch != null) {
+    k.plugTo(activeSwatch);
+    checkK.plugTo(activeSwatch);
+    b.plugTo(activeSwatch);
+    checkMu.plugTo(activeSwatch);
+    maxAL.plugTo(activeSwatch);
+    checkAL.plugTo(activeSwatch);
+    maxAH.plugTo(activeSwatch);
+    checkAH.plugTo(activeSwatch);
+  }
   
   refreshKnobs();
   refreshToggles();
-  selText = "Swatch " + activeSwatch.getId();
+  selText = (activeSwatch != null) ? ("Swatch " + activeSwatch.getId()) : ("NONE");
 }
 
 void keyPressed() {
   if (key == 'r' || key == 'R') {
     maxSpeed = 0;
   }
-  else if (key == '1' || key == '2' || key == '3' || key == '4') {
+  else if (key == ' ') {
+    // Select swatch if on handle
+    for (HapticSwatch s : swatches.values()) {
+      if (s.isTouching(posEE)) {
+        activateSwatch(s);
+        break;
+      }
+    }
+  }
+  /*else if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
     int keyVal = int(key) - 48;
     activateSwatch(swatches.get(keyVal - 1));
-  }
+  }*/
   else if (key == 'q' || key == 'Q' || key == 'a' || key == 'A') {
     // POSITIVE/NEGATIVE REWARD
     if (activeSwatch != null) {
@@ -252,11 +269,19 @@ void keyPressed() {
   }
   else if (key == 'z' || key == 'Z') {
     // Switch mode
-    manualTog.toggle();
+    manualTog.toggle(); 
   }
   else if (key == '0') {
     resetAgents();
     refreshKnobs();
+  }
+  else if (key == BACKSPACE) {
+    if (activeSwatch != null) {
+      synchronized(activeSwatch) {
+        swatches.remove(activeSwatch.getId());
+      }
+      activateSwatch(null);
+    }
   }
 }
 

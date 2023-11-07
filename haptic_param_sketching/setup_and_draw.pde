@@ -64,7 +64,30 @@ void setup() {
   manualTog = cp5.addToggle("isManual")
     .setPosition(75, 525)
     .setCaptionLabel("Manual/Autonomous")
-    .setColorCaptionLabel(color(20, 20, 20));
+    .setColorCaptionLabel(color(20, 20, 20))
+    .setMode(ControlP5.SWITCH);
+    
+  rewardModeToggle = cp5.addToggle("rewardMode")
+    .setPosition(75, 575)
+    .setValue(false)
+    .setCaptionLabel("Attention/Explicit")
+    .setColorCaptionLabel(color(20, 20, 20))
+    .setMode(ControlP5.SWITCH)
+    .onChange(new CallbackListener() {
+      public void controlEvent(CallbackEvent evt) {
+        Controller c = evt.getController();
+        if (c.equals(rewardModeToggle)) {
+          if (rwMode == RewardMode.EXPLICIT) {
+            rwMode = RewardMode.ATTENTION;
+          } else if (rwMode == RewardMode.ATTENTION) {
+            rwMode = RewardMode.EXPLICIT;
+          } else {
+            println("ERROR: Unexpected reward mode state: " + rwMode);
+          }
+          println(rwMode);
+        }
+      }
+    });
     
   cp5.addRadioButton("mode")
     .setPosition(825, 125)

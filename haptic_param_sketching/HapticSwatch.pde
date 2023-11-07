@@ -59,6 +59,11 @@ class HapticSwatch {
     return (k != lastK) || (mu != lastMu) || (maxAL != lastAL) || (maxAH != lastAH);
   }
   
+  public boolean isTouching(PVector posEE) {
+    PVector rDiff = posEE.copy().sub(h.pos);
+    return rDiff.mag() < radius;
+  }
+  
   public void refresh() {
     lastK = k;
     lastMu = mu;
@@ -80,7 +85,7 @@ class HapticSwatch {
     PVector forceTmp = new PVector(0, 0);
     PVector rDiff = posEE.copy().sub(h.pos);
     float speed = velEE.mag();
-    if (rDiff.mag() < radius) {
+    if (isTouching(posEE)) {
       if (!active) {
         //print("Active: ");
         //println(posEE);
