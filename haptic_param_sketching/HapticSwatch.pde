@@ -37,6 +37,7 @@ class HapticSwatch {
   static final long inactiveTime = 500000000; // 500 ms 
   public long lastForceTime = 0;
   boolean active = false;
+  public boolean requestPending = false;
   
   public HapticSwatch(float x, float y, float r) {
     id = (nextID++);

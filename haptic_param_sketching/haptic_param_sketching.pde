@@ -170,7 +170,7 @@ void mouseClicked() {
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
       s.k = s.mu = s.maxAL = s.maxAH = 0f;
-      delay(150); // race condition avoidance (I don't love this)
+      delay(500); // race condition avoidance (I don't love this)
       activateSwatch(s);
     }
   }
@@ -234,7 +234,7 @@ void activateSwatch(HapticSwatch swatch) {
 }
 
 void keyPressed() {
-  if (key == 'r' || key == 'R') {
+  if (key == 'y' || key == 'Y') {
     maxSpeed = 0;
   }
   else if (key == ' ') {
@@ -244,6 +244,27 @@ void keyPressed() {
         activateSwatch(s);
         break;
       }
+    }
+  }
+  else if (key == 'r' || key == 'R') {
+    if (rwMode == RewardMode.ATTENTION) {
+      // request new state
+      if (activeSwatch != null) {
+        synchronized(activeSwatch) {
+          OscMessage msg = new OscMessage("/controller/reward");
+          msg.add(activeSwatch.getId());
+          msg.add(rewardFromDuration(activeSwatch.elapsed));
+          oscp5.send(msg, oscDestination);
+          msg = new OscMessage("/controller/step");
+          msg.add(activeSwatch.getId());
+          oscp5.send(msg, oscDestination);
+        }
+        println("Request sent!");
+      } else {
+        println("No active swatch set - no action taken.");
+      }
+    } else {
+      println("Request does nothing in reward mode '" + rwMode + "'. (Debug reset is now y/Y.)");
     }
   }
   /*else if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
@@ -273,6 +294,10 @@ void keyPressed() {
   else if (key == 'z' || key == 'Z') {
     // Switch mode
     manualTog.toggle(); 
+  }
+  else if (key == 'x' || key == 'X') {
+    // switch reward
+    rewardModeToggle.toggle();
   }
   else if (key == '0') {
     resetAgents();

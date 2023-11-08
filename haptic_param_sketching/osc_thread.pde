@@ -15,7 +15,6 @@ class UpdateThread implements Runnable {
               oscp5.send(msg, oscDestination);
               // TODO check if we should update only once or on each active timestep
             } else {
-              // TODO Obtain action a from agent
               OscMessage msg = new OscMessage("/controller/step");
               msg.add(s.getId());
               oscp5.send(msg, oscDestination);
@@ -47,4 +46,10 @@ void oscEvent(OscMessage message) {
     swatch.maxAH = message.get(4).floatValue() * MAH;
   }
   refreshKnobs();
+}
+
+float rewardFromDuration(long elapsedMs) {
+  final float oneAtMs = 5000;
+  final float bias = -0.5;
+  return sqrt((float)(elapsedMs / oneAtMs)) + bias;
 }
