@@ -97,28 +97,30 @@ CallbackListener CL = new CallbackListener() {
       Controller c = evt.getController();
       OscMessage msg = new OscMessage("/controller/activate");
       synchronized(activeSwatch) {
-        msg.add(activeSwatch.getId());
-        if (c.equals(checkK)) {
-          println("checkK");
-          msg.add(0);
-          msg.add(activeSwatch.checkK);
-        } else if (c.equals(checkMu)) {
-          println("checkMu");
-          msg.add(1);
-          msg.add(activeSwatch.checkMu);
-        } else if (c.equals(checkAL)) {
-          println("checkAL");
-          msg.add(2);
-          msg.add(activeSwatch.checkAL);
-        } else if (c.equals(checkAH)) {
-          println("checkAH");
-          msg.add(3);
-          msg.add(activeSwatch.checkAH);
-        } else {
-          println("ERR - unknown controller");
-          return;
+        if (activeSwatch.ready) {
+          msg.add(activeSwatch.getId());
+          if (c.equals(checkK)) {
+            println("checkK");
+            msg.add(0);
+            msg.add(activeSwatch.checkK);
+          } else if (c.equals(checkMu)) {
+            println("checkMu");
+            msg.add(1);
+            msg.add(activeSwatch.checkMu);
+          } else if (c.equals(checkAL)) {
+            println("checkAL");
+            msg.add(2);
+            msg.add(activeSwatch.checkAL);
+          } else if (c.equals(checkAH)) {
+            println("checkAH");
+            msg.add(3);
+            msg.add(activeSwatch.checkAH);
+          } else {
+            println("ERR - unknown controller");
+            return;
+          }
+          oscp5.send(msg, oscDestination);
         }
-        oscp5.send(msg, oscDestination);
       }
     }
   }
@@ -170,8 +172,8 @@ void mouseClicked() {
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
       s.k = s.mu = s.maxAL = s.maxAH = 0f;
-      delay(500); // race condition avoidance (I don't love this)
       activateSwatch(s);
+      s.ready = true;
     }
   }
 }
