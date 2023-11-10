@@ -305,6 +305,19 @@ void keyPressed() {
     resetAgents();
     refreshKnobs();
   }
+  else if (key == '-') {
+    if (activeSwatch != null) {
+      synchronized(activeSwatch) {
+        OscMessage msg = new OscMessage("/controller/init");
+        msg.add(activeSwatch.getId());
+        msg.add(4);
+        msg.add(1f / nsteps);
+        oscp5.send(msg, oscDestination);
+        activeSwatch.k = activeSwatch.mu = activeSwatch.maxAL = activeSwatch.maxAH = 0f;
+        refreshKnobs();
+      }
+    }
+  }
   else if (key == BACKSPACE) {
     if (activeSwatch != null) {
       synchronized(activeSwatch) {
