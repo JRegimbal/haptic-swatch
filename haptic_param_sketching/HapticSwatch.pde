@@ -36,7 +36,6 @@ class HapticSwatch {
   
   static final long inactiveTime = 500000000; // 500 ms 
   public long lastForceTime = 0;
-  boolean active = false;
   public boolean requestPending = false;
   boolean ready = false; // sets to true once after first init to avoid race conditions with activate actions
   
@@ -89,11 +88,6 @@ class HapticSwatch {
     PVector rDiff = posEE.copy().sub(h.pos);
     float speed = velEE.mag();
     if (isTouching(posEE)) {
-      if (!active) {
-        //print("Active: ");
-        //println(posEE);
-        active = true;
-      }
       // Spring
       rDiff.setMag(radius - rDiff.mag());
       forceTmp.add(rDiff.mult(k));
@@ -113,13 +107,12 @@ class HapticSwatch {
           min(maxAH, speed * maxAH / maxV) * sin(textureConst * 150f * samp) +
           min(maxAL, speed * maxAL / maxV) * sin(textureConst * 25f * samp)
       ));
-      touch();
-    } else {
-      if (active) {
-        //print("Out: ");
-        //println(posEE);
-        active = false;
+      if (!posEE.equals(posEELast)) {
+        // Require end effector to be moving for activation
+        touch();
       }
+    } else {
+      // NOOP
     }
     return forceTmp;
   }
