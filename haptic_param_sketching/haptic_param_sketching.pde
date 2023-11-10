@@ -207,6 +207,20 @@ void mousePressed(MouseEvent event) {
   }
 }
 
+void mouseWheel(MouseEvent event) {
+  if (mouseInWorkspace()) {
+    PVector mouse = pixel_to_graphics(mouseX, mouseY);
+    // Check if we're in a handle
+    for (HapticSwatch s : swatches.values()) {
+      for (Handle h : s.getHandles()) {
+        if (dist(mouse.x, mouse.y, h.pos.x, h.pos.y) < h.r) {
+          s.radius += event.getCount() * 0.0005;
+        }
+      }
+    }
+  }
+}
+
 void activateSwatch(HapticSwatch swatch) {
   activeSwatch = swatch;
   for (HapticSwatch s : swatches.values()) {
