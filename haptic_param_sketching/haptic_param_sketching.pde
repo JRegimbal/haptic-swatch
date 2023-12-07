@@ -307,6 +307,26 @@ void keyPressed() {
       println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
     }
   }
+  else if (key == 'w' || key =='W' || key == 's' || key == 'S') {
+    // POSITIVE/NEGATIVE ZONE REWARD
+    if (rwMode == RewardMode.EXPLICIT) {
+      if (activeSwatch != null) {
+        synchronized(activeSwatch) {
+          OscMessage msg = new OscMessage("/controller/zone_reward");
+          msg.add(activeSwatch.getId());
+          if (key == 'w' || key == 'W') {
+            msg.add(1);
+          } else {
+            msg.add(-1);
+          }
+          oscp5.send(msg, oscDestination);
+        }
+        println("Zone reward sent");
+      }
+    } else {
+      println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
+    }
+  }
   else if (key == 'z' || key == 'Z') {
     // Switch mode
     manualTog.toggle(); 
