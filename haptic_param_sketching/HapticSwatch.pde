@@ -43,9 +43,13 @@ class HapticSwatch {
     id = (nextID++);
     h = new Handle(x, y);
     radius = r;
+    reset();
+    checkK = checkMu = checkA1 = checkA2 = checkF1 = checkF2 = true;
+  }
+
+  public void reset() {
     k = mu = maxA1 = maxA2 = 0;
     freq1 = freq2 = minF;
-    checkK = checkMu = checkA1 = checkA2 = checkF1 = checkF2 = true;
   }
   
   public int getId() { return id; }

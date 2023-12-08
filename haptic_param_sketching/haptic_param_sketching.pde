@@ -67,13 +67,6 @@ final long controlElapsedMs = 500;
 final float textureConst = 2*PI/targetRate;
 
 /** Params */
-/*(HapticSwatch[] swatches = {
-  new HapticSwatch(-0.02, 0.06, 0.01),
-  new HapticSwatch(0.02, 0.06, 0.01),
-  new HapticSwatch(-0.02, 0.10, 0.01),
-  new HapticSwatch(0.02, 0.10, 0.01)
-};*/
-
 HashMap<Integer, HapticSwatch> swatches = new HashMap();
 
 
@@ -114,8 +107,16 @@ CallbackListener CL = new CallbackListener() {
             msg.add(activeSwatch.checkA1);
           } else if (c.equals(checkA2)) {
             println("checkA2");
-            msg.add(3);
+            msg.add(4);
             msg.add(activeSwatch.checkA2);
+          } else if (c.equals(checkF1)) {
+            println("checkF1");
+            msg.add(3);
+            msg.add(activeSwatch.checkF1);
+          } else if (c.equals(checkF2)) {
+            println("checkF2");
+            msg.add(5);
+            msg.add(activeSwatch.checkF2);
           } else {
             println("ERR - unknown controller");
             return;
@@ -169,10 +170,10 @@ void mouseClicked() {
       swatches.put(s.getId(), s);
       OscMessage msg = new OscMessage("/controller/init");
       msg.add(s.getId());
-      msg.add(4);
+      msg.add(6);
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
-      s.k = s.mu = s.maxA1 = s.maxA2 = 0f;
+      s.reset();
       activateSwatch(s);
       s.ready = true;
     }
@@ -232,9 +233,11 @@ void activateSwatch(HapticSwatch swatch) {
     maxA1.unplugFrom(s);
     checkA1.unplugFrom(s);
     freq1.unplugFrom(s);
+    checkF1.unplugFrom(s);
     maxA2.unplugFrom(s);
     checkA2.unplugFrom(s);
     freq2.unplugFrom(s);
+    checkF2.unplugFrom(s);
   }
   if (activeSwatch != null) {
     k.plugTo(activeSwatch);
@@ -244,9 +247,11 @@ void activateSwatch(HapticSwatch swatch) {
     maxA1.plugTo(activeSwatch);
     checkA1.plugTo(activeSwatch);
     freq1.plugTo(activeSwatch);
+    checkF1.plugTo(activeSwatch);
     maxA2.plugTo(activeSwatch);
     checkA2.plugTo(activeSwatch);
     freq2.plugTo(activeSwatch);
+    checkF2.plugTo(activeSwatch);
   }
   
   refreshKnobs();
@@ -349,10 +354,10 @@ void keyPressed() {
       synchronized(activeSwatch) {
         OscMessage msg = new OscMessage("/controller/init");
         msg.add(activeSwatch.getId());
-        msg.add(4);
+        msg.add(6);
         msg.add(1f / nsteps);
         oscp5.send(msg, oscDestination);
-        activeSwatch.k = activeSwatch.mu = activeSwatch.maxA1 = activeSwatch.maxA2 = 0f;
+        activeSwatch.reset();
         refreshKnobs();
       }
     }
@@ -372,10 +377,10 @@ void resetAgents() {
     synchronized(s) {
       OscMessage msg = new OscMessage("/controller/init");
       msg.add(s.getId());
-      msg.add(4);
+      msg.add(6);
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
-      s.k = s.mu = s.maxA1 = s.maxA2 = 0f;
+      s.reset();
     }
   }
 }
@@ -399,7 +404,9 @@ void refreshToggles() {
       checkK.setValue(activeSwatch.checkK);
       checkMu.setValue(activeSwatch.checkMu);
       checkA1.setValue(activeSwatch.checkA1);
+      checkF1.setValue(activeSwatch.checkF1);
       checkA2.setValue(activeSwatch.checkA2);
+      checkF2.setValue(activeSwatch.checkF2);
     }
   }
 }

@@ -31,12 +31,12 @@ void setup() {
   checkMu = cp5.addToggle("checkMu")
     .setValue(true)
     .setSize(20, 20)
-    .setPosition(350, 105)
+    .setPosition(300, 105)
     .onChange(CL);
   maxA1 = cp5.addKnob("maxA1")
     .setRange(0, MAL)
     .setValue(0)
-    .setPosition(50, 275)
+    .setPosition(50, 150)
     .setRadius(50)
     .setCaptionLabel("Max Vib. 1 (N)")
     .setColorCaptionLabel(color(20, 20, 20))
@@ -44,20 +44,25 @@ void setup() {
   checkA1 = cp5.addToggle("checkA1")
     .setValue(true)
     .setSize(20, 20)
-    .setPosition(150, 355)
+    .setPosition(150, 230)
     .onChange(CL);
   freq1 = cp5.addKnob("freq1")
     .setRange(minF, maxF)
     .setValue(minF)
-    .setPosition(200, 275)
+    .setPosition(200, 150)
     .setRadius(50)
     .setCaptionLabel("Vib. Freq. 1 (Hz)")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
+  checkF1 = cp5.addToggle("checkF1")
+    .setValue(true)
+    .setSize(20, 20)
+    .setPosition(300, 230)
+    .onChange(CL);
   maxA2 = cp5.addKnob("maxA2")
     .setRange(0, MAH)
     .setValue(0)
-    .setPosition(50, 400)
+    .setPosition(50, 275)
     .setRadius(50)
     .setCaptionLabel("Max Vib. 2 (N)")
     .setColorCaptionLabel(color(20, 20, 20))
@@ -65,16 +70,21 @@ void setup() {
   checkA2 = cp5.addToggle("checkA2")
     .setValue(true)
     .setSize(20, 20)
-    .setPosition(150, 480)
+    .setPosition(150, 355)
     .onChange(CL);
   freq2 = cp5.addKnob("freq2")
     .setRange(minF, maxF)
     .setValue(minF)
-    .setPosition(200, 400)
+    .setPosition(200, 275)
     .setRadius(50)
     .setCaptionLabel("Vib. Freq. 2 (Hz)")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
+  checkF2 = cp5.addToggle("checkF2")
+    .setValue(true)
+    .setSize(20, 20)
+    .setPosition(300, 355)
+    .onChange(CL);
   manualTog = cp5.addToggle("isManual")
     .setPosition(75, 525)
     .setCaptionLabel("Manual/Autonomous")
@@ -203,11 +213,15 @@ void draw() {
         b.unlock();
         maxA1.unlock();
         maxA2.unlock();
+        freq1.unlock();
+        freq2.unlock();
       } else {
         k.lock();
         b.lock();
         maxA1.lock();
         maxA2.lock();
+        freq1.lock();
+        freq2.lock();
       }
       OscMessage msg = new OscMessage("/uistate/setAutonomous");
       msg.add(isManual);
