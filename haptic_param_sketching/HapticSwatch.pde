@@ -28,9 +28,9 @@ class Handle {
 class HapticSwatch {
   public float radius; // m
   public Handle h;
-  public float k, mu, maxAL, maxAH;
-  protected float lastK, lastMu, lastAL, lastAH;
-  public boolean checkK, checkMu, checkAL, checkAH;
+  public float k, mu, maxA1, maxA2, freq1, freq2;
+  protected float lastK, lastMu, lastA1, lastA2, lastF1, lastF2;
+  public boolean checkK, checkMu, checkA1, checkA2, checkF1, checkF2;
   private int id;
   public long elapsed = 0;
   
@@ -43,8 +43,9 @@ class HapticSwatch {
     id = (nextID++);
     h = new Handle(x, y);
     radius = r;
-    k = mu = maxAL = maxAH = 0;
-    checkK = checkMu = checkAL = checkAH = true;
+    k = mu = maxA1 = maxA2 = 0;
+    freq1 = freq2 = minF;
+    checkK = checkMu = checkA1 = checkA2 = checkF1 = checkF2 = true;
   }
   
   public int getId() { return id; }
@@ -58,7 +59,7 @@ class HapticSwatch {
   }
   
   public boolean newState() {
-    return (k != lastK) || (mu != lastMu) || (maxAL != lastAL) || (maxAH != lastAH);
+    return (k != lastK) || (mu != lastMu) || (maxA1 != lastA1) || (maxA2 != lastA2) || (freq1 != lastF1) || (freq2 != lastF2);
   }
   
   public boolean isTouching(PVector posEE) {
@@ -69,8 +70,10 @@ class HapticSwatch {
   public void refresh() {
     lastK = k;
     lastMu = mu;
-    lastAL = maxAL;
-    lastAH = maxAH;
+    lastA1 = maxA1;
+    lastA2 = maxA2;
+    lastF1 = freq1;
+    lastF2 = freq2;
   }
   
   ArrayList<Handle> getHandles() {
@@ -104,8 +107,8 @@ class HapticSwatch {
       // Texture
       final float maxV = vTh;
       forceTmp.add(velEE.copy().rotate(HALF_PI).setMag(
-          min(maxAH, speed * maxAH / maxV) * sin(textureConst * 150f * samp) +
-          min(maxAL, speed * maxAL / maxV) * sin(textureConst * 25f * samp)
+          min(maxA2, speed * maxA2 / maxV) * sin(textureConst * freq2* samp) +
+          min(maxA1, speed * maxA1 / maxV) * sin(textureConst * freq1 * samp)
       ));
       if (!posEE.equals(posEELast)) {
         // Require end effector to be moving for activation

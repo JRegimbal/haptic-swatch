@@ -33,8 +33,8 @@ RewardMode rwMode = RewardMode.EXPLICIT;
 boolean isManual = true;
 boolean lastMode = isManual;
 ControlP5 cp5;
-Knob k, b, maxAL, maxAH;
-Toggle checkK, checkMu, checkAL, checkAH;
+Knob k, b, freq1, freq2, maxA1, maxA2;
+Toggle checkK, checkMu, checkF1, checkF2, checkA1, checkA2;
 Toggle manualTog, rewardModeToggle;
 final float nsteps = 20f;
 long currTime, lastTime = 0;
@@ -89,7 +89,8 @@ final NetAddress oscDestination = new NetAddress("127.0.0.1", destination);
 OscP5 oscp5 = new OscP5(this, source);
 
 //final float maxK=500, maxB=1.0, MAL=2f, MAH=2f;
-final float maxK=250, maxB=0.5, MAL=1f, MAH=1f;
+final float maxK=250, maxB=0.5, MAL=1f, MAH=1f, maxF=200f;
+final float minK=0, minMu=0, minAL=0f, minAH=0f, minF=10f;
 
 CallbackListener CL = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {
@@ -107,14 +108,14 @@ CallbackListener CL = new CallbackListener() {
             println("checkMu");
             msg.add(1);
             msg.add(activeSwatch.checkMu);
-          } else if (c.equals(checkAL)) {
-            println("checkAL");
+          } else if (c.equals(checkA1)) {
+            println("checkA1");
             msg.add(2);
-            msg.add(activeSwatch.checkAL);
-          } else if (c.equals(checkAH)) {
-            println("checkAH");
+            msg.add(activeSwatch.checkA1);
+          } else if (c.equals(checkA2)) {
+            println("checkA2");
             msg.add(3);
-            msg.add(activeSwatch.checkAH);
+            msg.add(activeSwatch.checkA2);
           } else {
             println("ERR - unknown controller");
             return;
@@ -171,7 +172,7 @@ void mouseClicked() {
       msg.add(4);
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
-      s.k = s.mu = s.maxAL = s.maxAH = 0f;
+      s.k = s.mu = s.maxA1 = s.maxA2 = 0f;
       activateSwatch(s);
       s.ready = true;
     }
@@ -228,20 +229,24 @@ void activateSwatch(HapticSwatch swatch) {
     checkK.unplugFrom(s);
     b.unplugFrom(s);
     checkMu.unplugFrom(s);
-    maxAL.unplugFrom(s);
-    checkAL.unplugFrom(s);
-    maxAH.unplugFrom(s);
-    checkAH.unplugFrom(s);
+    maxA1.unplugFrom(s);
+    checkA1.unplugFrom(s);
+    freq1.unplugFrom(s);
+    maxA2.unplugFrom(s);
+    checkA2.unplugFrom(s);
+    freq2.unplugFrom(s);
   }
   if (activeSwatch != null) {
     k.plugTo(activeSwatch);
     checkK.plugTo(activeSwatch);
     b.plugTo(activeSwatch);
     checkMu.plugTo(activeSwatch);
-    maxAL.plugTo(activeSwatch);
-    checkAL.plugTo(activeSwatch);
-    maxAH.plugTo(activeSwatch);
-    checkAH.plugTo(activeSwatch);
+    maxA1.plugTo(activeSwatch);
+    checkA1.plugTo(activeSwatch);
+    freq1.plugTo(activeSwatch);
+    maxA2.plugTo(activeSwatch);
+    checkA2.plugTo(activeSwatch);
+    freq2.plugTo(activeSwatch);
   }
   
   refreshKnobs();
@@ -347,7 +352,7 @@ void keyPressed() {
         msg.add(4);
         msg.add(1f / nsteps);
         oscp5.send(msg, oscDestination);
-        activeSwatch.k = activeSwatch.mu = activeSwatch.maxAL = activeSwatch.maxAH = 0f;
+        activeSwatch.k = activeSwatch.mu = activeSwatch.maxA1 = activeSwatch.maxA2 = 0f;
         refreshKnobs();
       }
     }
@@ -370,7 +375,7 @@ void resetAgents() {
       msg.add(4);
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
-      s.k = s.mu = s.maxAL = s.maxAH = 0f;
+      s.k = s.mu = s.maxA1 = s.maxA2 = 0f;
     }
   }
 }
@@ -380,8 +385,10 @@ void refreshKnobs() {
     synchronized(activeSwatch) {
       k.setValue(activeSwatch.k);
       b.setValue(activeSwatch.mu);
-      maxAL.setValue(activeSwatch.maxAL);
-      maxAH.setValue(activeSwatch.maxAH);
+      maxA1.setValue(activeSwatch.maxA1);
+      freq1.setValue(activeSwatch.freq1);
+      maxA2.setValue(activeSwatch.maxA2);
+      freq2.setValue(activeSwatch.freq2);
     }
   }
 }
@@ -391,8 +398,8 @@ void refreshToggles() {
     synchronized(activeSwatch) {
       checkK.setValue(activeSwatch.checkK);
       checkMu.setValue(activeSwatch.checkMu);
-      checkAL.setValue(activeSwatch.checkAL);
-      checkAH.setValue(activeSwatch.checkAH);
+      checkA1.setValue(activeSwatch.checkA1);
+      checkA2.setValue(activeSwatch.checkA2);
     }
   }
 }

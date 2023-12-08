@@ -1,11 +1,9 @@
 /** Main thread */
 void setup() {
-  size(1000, 650);
+  size(1600, 650);
   frameRate(baseFrameRate);
   
   filt = new Butter2();
-  log = new Table();
-  log.addColumn("force");
   
   /** Controls */
   cp5 = new ControlP5(this);
@@ -35,32 +33,48 @@ void setup() {
     .setSize(20, 20)
     .setPosition(150, 230)
     .onChange(CL);
-  maxAL = cp5.addKnob("maxAL")
+  maxA1 = cp5.addKnob("maxA1")
     .setRange(0, MAL)
     .setValue(0)
     .setPosition(50, 275)
     .setRadius(50)
-    .setCaptionLabel("Low Texture Amp. (N)")
+    .setCaptionLabel("Max Vib. 1 (N)")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
-  checkAL = cp5.addToggle("checkAL")
+  checkA1 = cp5.addToggle("checkA1")
     .setValue(true)
     .setSize(20, 20)
     .setPosition(150, 355)
     .onChange(CL);
-  maxAH = cp5.addKnob("maxAH")
+  freq1 = cp5.addKnob("freq1")
+    .setRange(minF, maxF)
+    .setValue(minF)
+    .setPosition(200, 275)
+    .setRadius(50)
+    .setCaptionLabel("Vib. Freq. 1 (Hz)")
+    .setColorCaptionLabel(color(20, 20, 20))
+    .setDragDirection(Knob.VERTICAL);
+  maxA2 = cp5.addKnob("maxA2")
     .setRange(0, MAH)
     .setValue(0)
     .setPosition(50, 400)
     .setRadius(50)
-    .setCaptionLabel("Texture Amp. (N)")
+    .setCaptionLabel("Max Vib. 2 (N)")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL);
-  checkAH = cp5.addToggle("checkAH")
+  checkA2 = cp5.addToggle("checkA2")
     .setValue(true)
     .setSize(20, 20)
     .setPosition(150, 480)
     .onChange(CL);
+  freq2 = cp5.addKnob("freq2")
+    .setRange(minF, maxF)
+    .setValue(minF)
+    .setPosition(200, 400)
+    .setRadius(50)
+    .setCaptionLabel("Vib. Freq. 2 (Hz)")
+    .setColorCaptionLabel(color(20, 20, 20))
+    .setDragDirection(Knob.VERTICAL);
   manualTog = cp5.addToggle("isManual")
     .setPosition(75, 525)
     .setCaptionLabel("Manual/Autonomous")
@@ -90,7 +104,7 @@ void setup() {
     });
     
   cp5.addRadioButton("mode")
-    .setPosition(825, 125)
+    .setPosition(1325, 125)
     .setSize(20, 20)
     .setItemsPerRow(1)
     .setSpacingRow(25)
@@ -172,11 +186,12 @@ void draw() {
     // Show 2DIY
     update_animation(angles.x * radsPerDegree, angles.y * radsPerDegree, posEE.x, posEE.y);
     fill(0, 0, 0);
+    int xcoord = 1500;
     textAlign(RIGHT);
-    text("Delay (us): " + nf((int)((currTime - lastTime) / 1000), 4), 900, 40);
-    text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), 900, 60);
-    text("Max speed (mm/s): " + nf((int)(maxSpeed * 1000), 3), 900, 80);
-    text("Texture (N): " + nf((int)fEE.mag()), 900, 100);
+    text("Delay (us): " + nf((int)((currTime - lastTime) / 1000), 4), xcoord, 40);
+    text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), xcoord, 60);
+    text("Max speed (mm/s): " + nf((int)(maxSpeed * 1000), 3), xcoord, 80);
+    text("Texture (N): " + nf((int)fEE.mag()), xcoord, 100);
     textAlign(CENTER);
     text(selText, 100, 20);
     fill(255, 255, 255);
@@ -186,13 +201,13 @@ void draw() {
       if (isManual) {
         k.unlock();
         b.unlock();
-        maxAL.unlock();
-        maxAH.unlock();
+        maxA1.unlock();
+        maxA2.unlock();
       } else {
         k.lock();
         b.lock();
-        maxAL.lock();
-        maxAH.lock();
+        maxA1.lock();
+        maxA2.lock();
       }
       OscMessage msg = new OscMessage("/uistate/setAutonomous");
       msg.add(isManual);

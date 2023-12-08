@@ -10,8 +10,8 @@ class UpdateThread implements Runnable {
               msg.add(s.getId());
               msg.add(s.k / maxK);
               msg.add(s.mu / maxB);
-              msg.add(s.maxAL / MAL);
-              msg.add(s.maxAH / MAH);
+              msg.add(s.maxA1 / MAL);
+              msg.add(s.maxA2 / MAH);
               oscp5.send(msg, oscDestination);
               // TODO check if we should update only once or on each active timestep
             } else {
@@ -42,8 +42,8 @@ void oscEvent(OscMessage message) {
   synchronized(swatch) {
     swatch.k = message.get(1).floatValue() * maxK;
     swatch.mu = message.get(2).floatValue() * maxB;
-    swatch.maxAL = message.get(3).floatValue() * MAL;
-    swatch.maxAH = message.get(4).floatValue() * MAH;
+    swatch.maxA1 = message.get(3).floatValue() * MAL;
+    swatch.maxA2 = message.get(4).floatValue() * MAH;
   }
   refreshKnobs();
 }
