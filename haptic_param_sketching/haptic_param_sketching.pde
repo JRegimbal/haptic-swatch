@@ -63,7 +63,7 @@ PVector velEE = new PVector(0, 0);
 PVector fEE = new PVector(0, 0);
 
 final float targetRate = 1000f;
-final long controlElapsedMs = 500;
+final long controlElapsedMs = 100;
 final float textureConst = 2*PI/targetRate;
 
 /** Params */
@@ -82,8 +82,8 @@ final NetAddress oscDestination = new NetAddress("127.0.0.1", destination);
 OscP5 oscp5 = new OscP5(this, source);
 
 //final float maxK=500, maxB=1.0, MAL=2f, MAH=2f;
-final float maxK=250, maxB=0.5, MAL=1f, MAH=1f, maxF=200f;
-final float minK=0, minMu=0, minAL=0f, minAH=0f, minF=10f;
+final float maxK=150, maxB=0.5, MAL=1f, MAH=1f, maxF=200f;
+final float minK=-100, minMu=0, minAL=0f, minAH=0f, minF=10f;
 
 CallbackListener CL = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {

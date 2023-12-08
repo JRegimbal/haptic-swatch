@@ -8,7 +8,7 @@ void setup() {
   /** Controls */
   cp5 = new ControlP5(this);
   k = cp5.addKnob("k")
-    .setRange(0, maxK)
+    .setRange(minK, maxK)
     .setValue(0)
     .setPosition(50, 25)
     .setRadius(50)
@@ -21,7 +21,7 @@ void setup() {
     .setPosition(150, 105)
     .onChange(CL);
   b = cp5.addKnob("mu")
-    .setRange(0, maxB)
+    .setRange(minMu, maxB)
     .setValue(0) // unitless
     .setPosition(200, 25)
     .setRadius(50)
@@ -34,7 +34,7 @@ void setup() {
     .setPosition(300, 105)
     .onChange(CL);
   maxA1 = cp5.addKnob("maxA1")
-    .setRange(0, MAL)
+    .setRange(minAL, MAL)
     .setValue(0)
     .setPosition(50, 150)
     .setRadius(50)
@@ -60,7 +60,7 @@ void setup() {
     .setPosition(300, 230)
     .onChange(CL);
   maxA2 = cp5.addKnob("maxA2")
-    .setRange(0, MAH)
+    .setRange(minAH, MAH)
     .setValue(0)
     .setPosition(50, 275)
     .setRadius(50)

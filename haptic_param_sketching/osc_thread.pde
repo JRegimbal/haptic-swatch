@@ -8,11 +8,11 @@ class UpdateThread implements Runnable {
             if (isManual) {
               OscMessage msg = new OscMessage("/controller/manualSet");
               msg.add(s.getId());
-              msg.add(s.k / maxK);
-              msg.add(s.mu / maxB);
-              msg.add(s.maxA1 / MAL);
+              msg.add((s.k - minK) / (maxK - minK));
+              msg.add((s.mu - minMu) / (maxB - minMu));
+              msg.add((s.maxA1 - minAL) / (MAL - minAL));
               msg.add((s.freq1 - minF) / (maxF - minF));
-              msg.add(s.maxA2 / MAH);
+              msg.add((s.maxA2 - minAH) / (MAH - minAH));
               msg.add((s.freq2 - minF) / (maxF - minF));
               oscp5.send(msg, oscDestination);
               // TODO check if we should update only once or on each active timestep
