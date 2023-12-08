@@ -23,7 +23,7 @@ void setup() {
   b = cp5.addKnob("mu")
     .setRange(0, maxB)
     .setValue(0) // unitless
-    .setPosition(50, 150)
+    .setPosition(200, 25)
     .setRadius(50)
     .setCaptionLabel("Friction mu")
     .setColorCaptionLabel(color(20, 20, 20))
@@ -31,7 +31,7 @@ void setup() {
   checkMu = cp5.addToggle("checkMu")
     .setValue(true)
     .setSize(20, 20)
-    .setPosition(150, 230)
+    .setPosition(350, 105)
     .onChange(CL);
   maxA1 = cp5.addKnob("maxA1")
     .setRange(0, MAL)
@@ -157,7 +157,7 @@ void exit() {
   scheduler.shutdown();
   widget.set_device_torques(new float[]{0, 0});
   widget.device_write_torques();
-  saveTable(log, "log.csv");
+  //saveTable(log, "log.csv");
   OscMessage msg = new OscMessage("/quit");
   oscp5.send(msg, oscDestination);
   println("Quit");
