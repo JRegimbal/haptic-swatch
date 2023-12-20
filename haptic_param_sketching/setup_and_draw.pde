@@ -94,19 +94,23 @@ void setup() {
   posPathFb = cp5.addButton("processPosPathFb")
     .setPosition(50, 450)
     .setSize(100,50)
+    .setValue(1)
     .setLabel("Like this path");  
   negPathFb = cp5.addButton("processNegPathFb")
     .setPosition(50, 510)
     .setSize(100, 50)
+    .setValue(0)
     .setLabel("Dislike this path");
     
   posZoneFb = cp5.addButton("processPosZoneFb")
     .setPosition(200, 450)
     .setSize(100, 50)
+    .setValue(1)
     .setLabel("Like this zone");
   negPathFb = cp5.addButton("processNegZoneFb")
     .setPosition(200, 510)
     .setSize(100, 50)
+    .setValue(0)
     .setLabel("Dislike this zone");
     
   /*rewardModeToggle = cp5.addToggle("rewardMode")

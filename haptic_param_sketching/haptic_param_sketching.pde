@@ -299,44 +299,10 @@ void keyPressed() {
     activateSwatch(swatches.get(keyVal - 1));
   }*/
   else if (key == 'q' || key == 'Q' || key == 'a' || key == 'A') {
-    // POSITIVE/NEGATIVE REWARD
-    if (rwMode == RewardMode.EXPLICIT) {
-      if (activeSwatch != null) {
-        synchronized(activeSwatch) {
-          OscMessage msg = new OscMessage("/controller/reward");
-          msg.add(activeSwatch.getId());
-          if (key == 'q' || key == 'Q') {
-            msg.add(1);
-          } else {
-            msg.add(-1);
-          }
-          oscp5.send(msg, oscDestination);
-        }
-        println("Reward sent");
-      }
-    } else {
-      println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
-    }
+    processPathFb((key == 'q' || key == 'Q') ? 1 : 0);
   }
   else if (key == 'w' || key =='W' || key == 's' || key == 'S') {
-    // POSITIVE/NEGATIVE ZONE REWARD
-    if (rwMode == RewardMode.EXPLICIT) {
-      if (activeSwatch != null) {
-        synchronized(activeSwatch) {
-          OscMessage msg = new OscMessage("/controller/zone_reward");
-          msg.add(activeSwatch.getId());
-          if (key == 'w' || key == 'W') {
-            msg.add(1);
-          } else {
-            msg.add(-1);
-          }
-          oscp5.send(msg, oscDestination);
-        }
-        println("Zone reward sent");
-      }
-    } else {
-      println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
-    }
+    processZoneFb((key == 'w' || key == 'W') ? 1 : 0);
   }
   else if (key == 'z' || key == 'Z') {
     // Switch mode
@@ -446,4 +412,51 @@ PVector device_to_graphics(PVector deviceFrame) {
 
 PVector graphics_to_device(PVector graphicsFrame) {
   return graphicsFrame.set(-graphicsFrame.x, graphicsFrame.y);
+}
+
+void processPosPathFb() { processPathFb(1); }
+void processNegPathFb() { processPathFb(0); }
+void processPosZoneFb() { processZoneFb(1); }
+void processNegZoneFb() { processZoneFb(0); }
+
+void processPathFb(int value) {
+  // POSITIVE/NEGATIVE REWARD
+  if (rwMode == RewardMode.EXPLICIT) {
+    if (activeSwatch != null) {
+      synchronized(activeSwatch) {
+        OscMessage msg = new OscMessage("/controller/reward");
+        msg.add(activeSwatch.getId());
+        if (value == 1) {
+          msg.add(1);
+        } else {
+          msg.add(-1);
+        }
+        oscp5.send(msg, oscDestination);
+      }
+      println("Reward sent");
+    }
+  } else {
+    println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
+  }
+}
+
+void processZoneFb(int value) {
+// POSITIVE/NEGATIVE ZONE REWARD
+  if (rwMode == RewardMode.EXPLICIT) {
+    if (activeSwatch != null) {
+      synchronized(activeSwatch) {
+        OscMessage msg = new OscMessage("/controller/zone_reward");
+        msg.add(activeSwatch.getId());
+        if (value == 1) {
+          msg.add(1);
+        } else {
+          msg.add(-1);
+        }
+        oscp5.send(msg, oscDestination);
+      }
+      println("Zone reward sent");
+    }
+  } else {
+    println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
+  }
 }

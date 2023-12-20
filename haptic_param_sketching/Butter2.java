@@ -24,7 +24,7 @@ public class Butter2 implements Filter {  // 20 Hz at 1 kHz Butterworth
     for (int i = 0; i < coeffA.length; i++) {
       tmp.sub(PVector.mult(outputs[i], (float)coeffA[i]));
     }
-     //<>// //<>//
+     //<>// //<>// //<>//
     outputs[1] = outputs[0];
     outputs[0] = new PVector(tmp.x, tmp.y);
     return tmp;
