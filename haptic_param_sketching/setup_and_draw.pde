@@ -86,12 +86,30 @@ void setup() {
     .setPosition(300, 355)
     .onChange(CL);
   manualTog = cp5.addToggle("isManual")
-    .setPosition(75, 525)
+    .setPosition(75, 600)
     .setCaptionLabel("Manual/Autonomous")
     .setColorCaptionLabel(color(20, 20, 20))
     .setMode(ControlP5.SWITCH);
     
-  rewardModeToggle = cp5.addToggle("rewardMode")
+  posPathFb = cp5.addButton("processPosPathFb")
+    .setPosition(50, 450)
+    .setSize(100,50)
+    .setLabel("Like this path");  
+  negPathFb = cp5.addButton("processNegPathFb")
+    .setPosition(50, 510)
+    .setSize(100, 50)
+    .setLabel("Dislike this path");
+    
+  posZoneFb = cp5.addButton("processPosZoneFb")
+    .setPosition(200, 450)
+    .setSize(100, 50)
+    .setLabel("Like this zone");
+  negPathFb = cp5.addButton("processNegZoneFb")
+    .setPosition(200, 510)
+    .setSize(100, 50)
+    .setLabel("Dislike this zone");
+    
+  /*rewardModeToggle = cp5.addToggle("rewardMode")
     .setPosition(75, 575)
     .setValue(false)
     .setCaptionLabel("Attention/Explicit")
@@ -111,7 +129,7 @@ void setup() {
           println(rwMode);
         }
       }
-    });
+    });*/
     
   cp5.addRadioButton("mode")
     .setPosition(1325, 125)

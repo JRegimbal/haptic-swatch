@@ -36,6 +36,7 @@ ControlP5 cp5;
 Knob k, b, freq1, freq2, maxA1, maxA2;
 Toggle checkK, checkMu, checkF1, checkF2, checkA1, checkA2;
 Toggle manualTog, rewardModeToggle;
+Button posPathFb, negPathFb, posZoneFb, negZoneFb;
 final float nsteps = 20f;
 long currTime, lastTime = 0;
 
@@ -343,7 +344,7 @@ void keyPressed() {
   }
   else if (key == 'x' || key == 'X') {
     // switch reward
-    rewardModeToggle.toggle();
+    //rewardModeToggle.toggle();
   }
   else if (key == '0') {
     resetAgents();
