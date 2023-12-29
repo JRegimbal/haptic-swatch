@@ -42,12 +42,18 @@ void oscEvent(OscMessage message) {
   int ID = message.get(0).intValue();
   HapticSwatch swatch = swatches.get(ID);
   synchronized(swatch) {
-    swatch.k = message.get(1).floatValue() * maxK;
-    swatch.mu = message.get(2).floatValue() * maxB;
-    swatch.maxA1 = message.get(3).floatValue() * MAL;
+    TableRow row = log.addRow();
+    row.setString("timestamp", OffsetDateTime.now().toString());
+    row.setString("command", "modify");
+    row.setInt("element", ID);
+    swatch.k = message.get(1).floatValue() * (maxK - minK) + minK;
+    swatch.mu = message.get(2).floatValue() * (maxB - minMu) + minMu;
+    swatch.maxA1 = message.get(3).floatValue() * (MAL - minAL) + minAL;
     swatch.freq1 = message.get(4).floatValue() * (maxF - minF) + minF;
-    swatch.maxA2 = message.get(5).floatValue() * MAH;
+    swatch.maxA2 = message.get(5).floatValue() * (MAH - minAH) + minAH;
     swatch.freq2 = message.get(6).floatValue() * (maxF - minF) + minF;
+    row.setString("primary", swatch.valueString());
+    row.setString("secondary", "agent");
   }
   refreshKnobs();
 }

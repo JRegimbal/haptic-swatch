@@ -2,8 +2,21 @@
 void setup() {
   size(1600, 650);
   frameRate(baseFrameRate);
-  
+    
   filt = new Butter2();
+  
+  /** Logging */
+  log = new Table();
+  log.addColumn("timestamp");
+  log.addColumn("command");
+  log.addColumn("element");
+  log.addColumn("primary");
+  log.addColumn("secondary");
+  
+  // Start time row for reference
+  TableRow row = log.addRow();
+  row.setString("timestamp", OffsetDateTime.now().toString());
+  row.setString("command", "start");
   
   /** Controls */
   cp5 = new ControlP5(this);
@@ -14,7 +27,8 @@ void setup() {
     .setRadius(50)
     .setCaptionLabel("Spring k")
     .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
+    .setDragDirection(Knob.VERTICAL)
+    .onChange(knobLog);
   checkK = cp5.addToggle("checkK")
     .setValue(true)
     .setSize(20, 20)
@@ -27,7 +41,8 @@ void setup() {
     .setRadius(50)
     .setCaptionLabel("Friction mu")
     .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
+    .setDragDirection(Knob.VERTICAL)
+    .onChange(knobLog);
   checkMu = cp5.addToggle("checkMu")
     .setValue(true)
     .setSize(20, 20)
@@ -40,7 +55,8 @@ void setup() {
     .setRadius(50)
     .setCaptionLabel("Max Vib. 1 (N)")
     .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
+    .setDragDirection(Knob.VERTICAL)
+    .onChange(knobLog);
   checkA1 = cp5.addToggle("checkA1")
     .setValue(true)
     .setSize(20, 20)
@@ -53,7 +69,8 @@ void setup() {
     .setRadius(50)
     .setCaptionLabel("Vib. Freq. 1 (Hz)")
     .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
+    .setDragDirection(Knob.VERTICAL)
+    .onChange(knobLog);
   checkF1 = cp5.addToggle("checkF1")
     .setValue(true)
     .setSize(20, 20)
@@ -66,7 +83,8 @@ void setup() {
     .setRadius(50)
     .setCaptionLabel("Max Vib. 2 (N)")
     .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
+    .setDragDirection(Knob.VERTICAL)
+    .onChange(knobLog);
   checkA2 = cp5.addToggle("checkA2")
     .setValue(true)
     .setSize(20, 20)
@@ -79,7 +97,8 @@ void setup() {
     .setRadius(50)
     .setCaptionLabel("Vib. Freq. 2 (Hz)")
     .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL);
+    .setDragDirection(Knob.VERTICAL)
+    .onChange(knobLog);
   checkF2 = cp5.addToggle("checkF2")
     .setValue(true)
     .setSize(20, 20)
@@ -90,7 +109,8 @@ void setup() {
     .setSize(100, 25)
     .setCaptionLabel("Manual/Autonomous Toggle (Z)")
     .setColorCaptionLabel(color(20, 20, 20))
-    .setMode(ControlP5.SWITCH);
+    .setMode(ControlP5.SWITCH)
+    .onChange(modeLog);
     
   posPathFb = cp5.addButton("processPosPathFb")
     .setPosition(50, 450)
@@ -190,7 +210,10 @@ void exit() {
   scheduler.shutdown();
   widget.set_device_torques(new float[]{0, 0});
   widget.device_write_torques();
-  //saveTable(log, "log.csv");
+  TableRow row = log.addRow();
+  row.setString("timestamp", OffsetDateTime.now().toString());
+  row.setString("command", "quit");
+  saveTable(log, "data/log.csv");
   OscMessage msg = new OscMessage("/quit");
   oscp5.send(msg, oscDestination);
   println("Quit");
@@ -205,8 +228,14 @@ void draw() {
     PVector mouse = pixel_to_graphics(mouseX, mouseY);
     if (mousePressed && mode == InputMode.MOVE && moveInterimCoordinates != null) {
       for (Handle h : handleBuffer) {
+        TableRow row = log.addRow();
+        row.setString("timestamp", OffsetDateTime.now().toString());
+        row.setString("command", "move");
+        row.setInt("element", h.id);
+        row.setString("primary", "["+h.pos.x+","+h.pos.y+"]");
         h.pos.x += mouse.x - moveInterimCoordinates.x;
         h.pos.y += mouse.y - moveInterimCoordinates.y;
+        row.setString("secondary", "["+h.pos.x+","+h.pos.y+"]");
       }
       moveInterimCoordinates = mouse;
     }

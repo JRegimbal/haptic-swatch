@@ -7,9 +7,15 @@ int nextID = 0;
 class Handle {
   PVector pos;
   final float r = 0.0025;
+  int id = -1;
   
   Handle(float _x, float _y) {
     pos = new PVector(_x, _y);
+  }
+  
+  Handle(float _x, float _y, int _id) {
+    this(_x, _y);
+    id = _id;
   }
   
   void display() {
@@ -41,7 +47,7 @@ class HapticSwatch {
   
   public HapticSwatch(float x, float y, float r) {
     id = (nextID++);
-    h = new Handle(x, y);
+    h = new Handle(x, y, id);
     radius = r;
     reset();
     checkK = checkMu = checkA1 = checkA2 = checkF1 = checkF2 = true;
@@ -56,6 +62,21 @@ class HapticSwatch {
   
   public void touch() {
     lastForceTime = System.nanoTime();
+  }
+  
+  public String valueString() {
+    return "[" + (k - minK) / (maxK - minK) + "," +
+      (mu - minMu) / (maxB - minMu) + "," +
+      (maxA1 - minAL) / (MAL - minAL) + "," +
+      (freq1 - minF) / (maxF - minF) + "," +
+      (maxA2 - minAH) / (MAH - minAH) + "," +
+      (freq2 - minF) / (maxF - minF) + "]";
+  }
+  
+  public String locString() {
+    return "[" + h.pos.x + "," +
+      h.pos.y + "," +
+      radius + "]";
   }
   
   public boolean isActive() {

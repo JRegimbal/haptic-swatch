@@ -1,3 +1,4 @@
+import java.time.OffsetDateTime;
 import processing.serial.*;
 import static java.util.concurrent.TimeUnit.*;
 import java.util.concurrent.*;
@@ -31,6 +32,7 @@ InputMode mode = InputMode.SELECT;
 final HaplyVersion version = HaplyVersion.V3_1;
 RewardMode rwMode = RewardMode.EXPLICIT;
 boolean isManual = true;
+boolean isSwitch = false; // ignore logging when action is side effect from switching active swatch
 boolean lastMode = isManual;
 ControlP5 cp5;
 Knob k, b, freq1, freq2, maxA1, maxA2;
@@ -86,6 +88,19 @@ OscP5 oscp5 = new OscP5(this, source);
 final float maxK=150, maxB=0.5, MAL=1f, MAH=1f, maxF=200f;
 final float minK=-100, minMu=0, minAL=0f, minAH=0f, minF=10f;
 
+CallbackListener knobLog = new CallbackListener() {
+  public void controlEvent(CallbackEvent evt) {
+    if (activeSwatch != null && isManual && !isSwitch) {
+      TableRow row = log.addRow();
+      row.setString("timestamp", OffsetDateTime.now().toString());
+      row.setString("command", "modify");
+      row.setInt("element", activeSwatch.getId());
+      row.setString("primary", activeSwatch.valueString());
+      row.setString("secondary", "user");
+    }
+  }
+};
+
 CallbackListener CL = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {
     if (activeSwatch != null) {
@@ -93,36 +108,72 @@ CallbackListener CL = new CallbackListener() {
       OscMessage msg = new OscMessage("/controller/activate");
       synchronized(activeSwatch) {
         if (activeSwatch.ready) {
+          int id;
+          boolean val;
+          String label;
           msg.add(activeSwatch.getId());
           if (c.equals(checkK)) {
             println("checkK");
-            msg.add(0);
-            msg.add(activeSwatch.checkK);
+            id = 0;
+            val = activeSwatch.checkK;
+            label = "k";
           } else if (c.equals(checkMu)) {
             println("checkMu");
-            msg.add(1);
-            msg.add(activeSwatch.checkMu);
+            id = 1;
+            val = activeSwatch.checkMu;
+            label = "mu";
           } else if (c.equals(checkA1)) {
             println("checkA1");
-            msg.add(2);
-            msg.add(activeSwatch.checkA1);
+            id = 2;
+            val = activeSwatch.checkA1;
+            label = "A1";
           } else if (c.equals(checkA2)) {
             println("checkA2");
-            msg.add(4);
-            msg.add(activeSwatch.checkA2);
+            id = 4;
+            val = activeSwatch.checkA2;
+            label = "A2";
           } else if (c.equals(checkF1)) {
             println("checkF1");
-            msg.add(3);
-            msg.add(activeSwatch.checkF1);
+            id = 3;
+            val = activeSwatch.checkF1;
+            label = "F1";
           } else if (c.equals(checkF2)) {
             println("checkF2");
-            msg.add(5);
-            msg.add(activeSwatch.checkF2);
+            id = 5;
+            val = activeSwatch.checkF2;
+            label = "F2";
           } else {
             println("ERR - unknown controller");
             return;
           }
+          msg.add(id);
+          msg.add(val);
           oscp5.send(msg, oscDestination);
+          if (!isSwitch) {
+            TableRow row = log.addRow();
+            row.setString("timestamp", OffsetDateTime.now().toString());
+            row.setString("command", "lock");
+            row.setInt("element", id);
+            row.setString("primary", String.valueOf(val));
+          }
+        }
+      }
+    }
+  }
+};
+
+CallbackListener modeLog = new CallbackListener() {
+  public void controlEvent(CallbackEvent evt) {
+    Controller c = evt.getController();
+    if (c.equals(manualTog)) {
+      synchronized(log) {
+        TableRow row = log.addRow();
+        row.setString("timestamp", OffsetDateTime.now().toString());
+        row.setString("command", "switch");
+        if (isManual) {
+          row.setString("primary", "manual");
+        } else {
+          row.setString("primary", "automous");
         }
       }
     }
@@ -174,6 +225,14 @@ void mouseClicked() {
       msg.add(6);
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
+      synchronized(log) {
+        TableRow row = log.addRow();
+        row.setString("timestamp", OffsetDateTime.now().toString());
+        row.setString("command", "create");
+        row.setInt("element", s.getId());
+        row.setString("primary", s.valueString());
+        row.setString("secondary", s.locString());
+      }
       s.reset();
       activateSwatch(s);
       s.ready = true;
@@ -217,7 +276,13 @@ void mouseWheel(MouseEvent event) {
     for (HapticSwatch s : swatches.values()) {
       for (Handle h : s.getHandles()) {
         if (dist(mouse.x, mouse.y, h.pos.x, h.pos.y) < h.r) {
+          TableRow row = log.addRow();
+          row.setString("timestamp", OffsetDateTime.now().toString());
+          row.setString("command", "resize");
+          row.setInt("element", s.getId());
+          row.setFloat("primary", s.radius); 
           s.radius += event.getCount() * 0.0005;
+          row.setFloat("secondary", s.radius);
         }
       }
     }
@@ -321,21 +386,35 @@ void keyPressed() {
   }
   else if (key == '-') {
     if (activeSwatch != null) {
+      int id = -1;
       synchronized(activeSwatch) {
+        id = activeSwatch.getId();
         OscMessage msg = new OscMessage("/controller/init");
-        msg.add(activeSwatch.getId());
+        msg.add(id);
         msg.add(6);
         msg.add(1f / nsteps);
         oscp5.send(msg, oscDestination);
         activeSwatch.reset();
         refreshKnobs();
       }
+      TableRow row = log.addRow();
+      row.setString("timestamp", OffsetDateTime.now().toString());
+      row.setString("command", "reset");
+      row.setInt("element", id);
     }
   }
   else if (key == BACKSPACE) {
     if (activeSwatch != null) {
       synchronized(activeSwatch) {
         swatches.remove(activeSwatch.getId());
+      }
+      synchronized(log) {
+        TableRow row = log.addRow();
+        row.setString("timestamp", OffsetDateTime.now().toString());
+        row.setString("command", "delete");
+        row.setInt("element", activeSwatch.getId());
+        row.setString("primary", activeSwatch.valueString());
+        row.setString("secondary", activeSwatch.locString());
       }
       activateSwatch(null);
     }
@@ -344,26 +423,34 @@ void keyPressed() {
 
 void resetAgents() {
   for (HapticSwatch s : swatches.values()) {
+    int id = -1;
     synchronized(s) {
+      id = s.getId();
       OscMessage msg = new OscMessage("/controller/init");
-      msg.add(s.getId());
+      msg.add(id);
       msg.add(6);
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
       s.reset();
     }
+    TableRow row = log.addRow();
+    row.setString("timestamp", OffsetDateTime.now().toString());
+    row.setString("command", "reset");
+    row.setInt("element", id);
   }
 }
 
 void refreshKnobs() {
   if (activeSwatch != null) {
     synchronized(activeSwatch) {
+      isSwitch = true;
       k.setValue(activeSwatch.k);
       b.setValue(activeSwatch.mu);
       maxA1.setValue(activeSwatch.maxA1);
       freq1.setValue(activeSwatch.freq1);
       maxA2.setValue(activeSwatch.maxA2);
       freq2.setValue(activeSwatch.freq2);
+      isSwitch = false;
     }
   }
 }
@@ -371,12 +458,14 @@ void refreshKnobs() {
 void refreshToggles() {
   if (activeSwatch != null) {
     synchronized(activeSwatch) {
+      isSwitch = true;
       checkK.setValue(activeSwatch.checkK);
       checkMu.setValue(activeSwatch.checkMu);
       checkA1.setValue(activeSwatch.checkA1);
       checkF1.setValue(activeSwatch.checkF1);
       checkA2.setValue(activeSwatch.checkA2);
       checkF2.setValue(activeSwatch.checkF2);
+      isSwitch = false;
     }
   }
 }
@@ -426,16 +515,24 @@ void processPathFb(int value) {
   // POSITIVE/NEGATIVE REWARD
   if (rwMode == RewardMode.EXPLICIT) {
     if (activeSwatch != null) {
+      int id, feedback;
       synchronized(activeSwatch) {
         OscMessage msg = new OscMessage("/controller/reward");
-        msg.add(activeSwatch.getId());
+        id = activeSwatch.getId();
+        msg.add(id);
         if (value == 1) {
-          msg.add(1);
+          feedback = 1;
         } else {
-          msg.add(-1);
+          feedback = -1;
         }
+        msg.add(feedback);
         oscp5.send(msg, oscDestination);
       }
+      TableRow row = log.addRow();
+      row.setString("timestamp", OffsetDateTime.now().toString());
+      row.setString("command", "guide");
+      row.setInt("element", id);
+      row.setInt("primary", feedback);
       println("Reward sent");
     }
   } else {
@@ -447,16 +544,24 @@ void processZoneFb(int value) {
 // POSITIVE/NEGATIVE ZONE REWARD
   if (rwMode == RewardMode.EXPLICIT) {
     if (activeSwatch != null) {
+      int id, feedback;
       synchronized(activeSwatch) {
         OscMessage msg = new OscMessage("/controller/zone_reward");
-        msg.add(activeSwatch.getId());
+        id = activeSwatch.getId();
+        msg.add(id);
         if (value == 1) {
-          msg.add(1);
+          feedback = 1;
         } else {
-          msg.add(-1);
+          feedback = -1;
         }
+        msg.add(feedback);
         oscp5.send(msg, oscDestination);
       }
+      TableRow row = log.addRow();
+      row.setString("timestamp", OffsetDateTime.now().toString());
+      row.setString("command", "zone");
+      row.setInt("element", id);
+      row.setInt("primary", feedback);
       println("Zone reward sent");
     }
   } else {
