@@ -264,6 +264,9 @@ void keyPressed() {
   if (key == 'y' || key == 'Y') {
     maxSpeed = 0;
   }
+  else if (key == ESC) {
+    key = 0;
+  }
   else if (key == ' ') {
     // Select swatch if on handle
     for (HapticSwatch s : swatches.values()) {

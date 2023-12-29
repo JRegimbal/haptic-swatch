@@ -87,7 +87,8 @@ void setup() {
     .onChange(CL);
   manualTog = cp5.addToggle("isManual")
     .setPosition(75, 600)
-    .setCaptionLabel("Manual/Autonomous")
+    .setSize(100, 25)
+    .setCaptionLabel("Manual/Autonomous Toggle (Z)")
     .setColorCaptionLabel(color(20, 20, 20))
     .setMode(ControlP5.SWITCH);
     
@@ -95,23 +96,23 @@ void setup() {
     .setPosition(50, 450)
     .setSize(100,50)
     .setValue(1)
-    .setLabel("Like this path");  
+    .setLabel("Like this path (Q)");  
   negPathFb = cp5.addButton("processNegPathFb")
     .setPosition(50, 510)
     .setSize(100, 50)
     .setValue(0)
-    .setLabel("Dislike this path");
+    .setLabel("Dislike this path (A)");
     
   posZoneFb = cp5.addButton("processPosZoneFb")
     .setPosition(200, 450)
     .setSize(100, 50)
     .setValue(1)
-    .setLabel("Like this zone");
+    .setLabel("Like this zone (W)");
   negPathFb = cp5.addButton("processNegZoneFb")
     .setPosition(200, 510)
     .setSize(100, 50)
     .setValue(0)
-    .setLabel("Dislike this zone");
+    .setLabel("Dislike this zone (S)");
     
   /*rewardModeToggle = cp5.addToggle("rewardMode")
     .setPosition(75, 575)
