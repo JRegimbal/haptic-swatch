@@ -117,7 +117,9 @@ class HapticSwatch {
     float speed = velEE.mag();
     if (isTouching(posEE)) {
       // Spring
-      rDiff.setMag(radius - rDiff.mag());
+      if (k >= 0f) {
+        rDiff.setMag(radius - rDiff.mag());
+      }
       forceTmp.add(rDiff.mult(k));
       // Friction
       final float vTh = 0.1;
