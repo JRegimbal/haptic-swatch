@@ -55,8 +55,8 @@ long baseFrameRate = 120;
 ScheduledFuture<?> handle;
 Filter filt;
 Table log;
-final float xExtent = 0.065f;
-final float yExtent = 0.15f;
+final float xExtent = 0.075f;
+final float yExtent = 0.13f;
 
 PVector angles = new PVector(0, 0);
 PVector torques = new PVector(0, 0);
@@ -182,7 +182,7 @@ CallbackListener modeLog = new CallbackListener() {
 
 boolean mouseInWorkspace() {
   PVector mouse = pixel_to_graphics(mouseX, mouseY);
-  return (mouse.x > -xExtent && mouse.x < xExtent && mouse.y < yExtent && mouse.y > 0f);
+  return (mouse.x > -xExtent - 19e-3 && mouse.x < xExtent - 19e-3 && mouse.y < yExtent && mouse.y > 0f);
 }
 
 void mouseClicked() {

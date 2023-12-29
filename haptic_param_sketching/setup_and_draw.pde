@@ -224,6 +224,19 @@ void draw() {
   if (renderingForce == false) {
     background(255);
     
+    // Show 2DIY
+    update_animation(angles.x * radsPerDegree, angles.y * radsPerDegree, posEE.x, posEE.y);
+    fill(0, 0, 0);
+    int xcoord = 1500;
+    textAlign(RIGHT);
+    text("Delay (us): " + nf((int)((currTime - lastTime) / 1000), 4), xcoord, 40);
+    text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), xcoord, 60);
+    text("Max speed (mm/s): " + nf((int)(maxSpeed * 1000), 3), xcoord, 80);
+    text("Texture (N): " + nf((int)fEE.mag()), xcoord, 100);
+    textAlign(CENTER);
+    text(selText, 100, 20);
+    fill(255, 255, 255);
+    
     // Process move action since last frame
     PVector mouse = pixel_to_graphics(mouseX, mouseY);
     if (mousePressed && mode == InputMode.MOVE && moveInterimCoordinates != null) {
@@ -245,18 +258,10 @@ void draw() {
       s.display();
     }
     
-    // Show 2DIY
-    update_animation(angles.x * radsPerDegree, angles.y * radsPerDegree, posEE.x, posEE.y);
-    fill(0, 0, 0);
-    int xcoord = 1500;
-    textAlign(RIGHT);
-    text("Delay (us): " + nf((int)((currTime - lastTime) / 1000), 4), xcoord, 40);
-    text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), xcoord, 60);
-    text("Max speed (mm/s): " + nf((int)(maxSpeed * 1000), 3), xcoord, 80);
-    text("Texture (N): " + nf((int)fEE.mag()), xcoord, 100);
-    textAlign(CENTER);
-    text(selText, 100, 20);
-    fill(255, 255, 255);
+    // Draw Workspace bounds
+    shape(create_line(-xExtent - 19e-3, 0, -xExtent - 19e-3, yExtent));
+    shape(create_line(-xExtent - 19e-3, yExtent, xExtent - 19e-3, yExtent));
+    shape(create_line(xExtent - 19e-3, 0, xExtent - 19e-3, yExtent));
     
     // Process change in autonomous/manual update mode
     if (lastMode != isManual) {
