@@ -39,6 +39,7 @@ Knob k, b, freq1, freq2, maxA1, maxA2;
 Toggle checkK, checkMu, checkF1, checkF2, checkA1, checkA2;
 Toggle manualTog, rewardModeToggle;
 Button posPathFb, negPathFb, posZoneFb, negZoneFb;
+RadioButton modeRadio;
 final float nsteps = 20f;
 long currTime, lastTime = 0;
 
@@ -366,6 +367,11 @@ void keyPressed() {
     int keyVal = int(key) - 48;
     activateSwatch(swatches.get(keyVal - 1));
   }*/
+  else if (key == '1' || key == '2' || key == '3') {
+    int val = key - 49;
+    Toggle tmp = modeRadio.getItem(val);
+    if (!tmp.getBooleanValue()) tmp.toggle();
+  }
   else if (key == 'q' || key == 'Q' || key == 'a' || key == 'A') {
     processPathFb((key == 'q' || key == 'Q') ? 1 : 0);
   }

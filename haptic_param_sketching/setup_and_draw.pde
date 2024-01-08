@@ -156,7 +156,7 @@ void setup() {
       }
     });*/
     
-  cp5.addRadioButton("mode")
+  modeRadio = cp5.addRadioButton("mode")
     .setPosition(1325, 125)
     .setSize(20, 20)
     .setItemsPerRow(1)
