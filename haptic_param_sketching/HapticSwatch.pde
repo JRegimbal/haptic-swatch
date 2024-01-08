@@ -31,6 +31,23 @@ class Handle {
   }
 }
 
+class HapticParams {
+  public float k, mu, maxA1, maxA2, freq1, freq2;
+  
+  public HapticParams() {
+    k = mu = maxA1 = maxA2 = freq1 = freq2 = 0f;
+  }
+  
+  public HapticParams(float k, float mu, float maxA1, float maxA2, float freq1, float freq2) {
+    this.k = k;
+    this.mu = mu;
+    this.maxA1 = maxA1;
+    this.maxA2 = maxA2;
+    this.freq1 = freq1;
+    this.freq2 = freq2;
+  }
+}
+
 class HapticSwatch {
   public float radius; // m
   public Handle h;
@@ -44,6 +61,19 @@ class HapticSwatch {
   public long lastForceTime = 0;
   public boolean requestPending = false;
   boolean ready = false; // sets to true once after first init to avoid race conditions with activate actions
+  
+  public HapticParams getParams() {
+    return new HapticParams(k, mu, maxA1, maxA2, freq1, freq2);
+  }
+  
+  public void setParams(HapticParams p) {
+    k = p.k;
+    mu = p.mu;
+    maxA1 = p.maxA1;
+    maxA2 = p.maxA2;
+    freq1 = p.freq1;
+    freq2 = p.freq2;
+  }
   
   public HapticSwatch(float x, float y, float r) {
     id = (nextID++);

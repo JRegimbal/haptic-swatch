@@ -168,6 +168,18 @@ void setup() {
     .activate(0)
     ;
     
+  copyButton = cp5.addButton("copyActive")
+    .setPosition(1325, 450)
+    .setSize(100, 50)
+    .setLabel("Copy Haptic Params")
+    ;
+    
+  pasteButton = cp5.addButton("pasteToActive")
+    .setPosition(1450, 450)
+    .setSize(100, 50)
+    .setLabel("Paste Haptic Params")
+    ;
+    
   /** Haply */
   haplyBoard = new Board(this, Serial.list()[0], 0);
   widget = new Device(widgetID, haplyBoard);
@@ -233,6 +245,11 @@ void draw() {
     text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), xcoord, 60);
     text("Max speed (mm/s): " + nf((int)(maxSpeed * 1000), 3), xcoord, 80);
     text("Texture (N): " + nf((int)fEE.mag()), xcoord, 100);
+    // Clipboard
+    text("Clipboard value", xcoord, 550);
+    text("k: " + nf(clipboard.k, 3, 2) + "        mu: " + nf(clipboard.mu, 1, 2), xcoord, 575);
+    text("Vib 1: " + nf(clipboard.maxA1, 1, 2) + " Freq 1: " + nf(clipboard.freq1, 3, 1), xcoord, 600);
+    text("Vib 2: " + nf(clipboard.maxA2, 1, 2) + " Freq 2: " + nf(clipboard.freq2, 3, 1), xcoord, 625);
     textAlign(CENTER);
     text(selText, 100, 20);
     fill(255, 255, 255);

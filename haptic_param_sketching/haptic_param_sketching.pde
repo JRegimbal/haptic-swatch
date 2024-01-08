@@ -40,6 +40,8 @@ Toggle checkK, checkMu, checkF1, checkF2, checkA1, checkA2;
 Toggle manualTog, rewardModeToggle;
 Button posPathFb, negPathFb, posZoneFb, negZoneFb;
 RadioButton modeRadio;
+HapticParams clipboard = new HapticParams();
+Button copyButton, pasteButton;
 final float nsteps = 20f;
 long currTime, lastTime = 0;
 
@@ -425,6 +427,12 @@ void keyPressed() {
       activateSwatch(null);
     }
   }
+  else if (key == 'c') {
+    copyActive();
+  }
+  else if (key == 'v') {
+    pasteToActive();
+  }
 }
 
 void resetAgents() {
@@ -572,5 +580,24 @@ void processZoneFb(int value) {
     }
   } else {
     println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
+  }
+}
+
+void copyActive() {
+  println("Ping");
+  if (activeSwatch != null) {
+    synchronized(activeSwatch) {
+      clipboard = activeSwatch.getParams();
+    }
+  }
+}
+
+void pasteToActive() {
+  println("Pong");
+  if (activeSwatch != null) {
+    synchronized(activeSwatch) {
+      activeSwatch.setParams(clipboard);
+      refreshKnobs();
+    }
   }
 }
