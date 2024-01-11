@@ -433,6 +433,9 @@ void keyPressed() {
   else if (key == 'v') {
     pasteToActive();
   }
+  else if (key == '_') {
+    widget = haplysetup(widgetID, haplyBoard);
+  }
 }
 
 void resetAgents() {
