@@ -1,6 +1,6 @@
 /** Main thread */
 void setup() {
-  size(1600, 650);
+  size(1280, 650);
   frameRate(baseFrameRate);
     
   filt = new Butter2();
@@ -157,7 +157,7 @@ void setup() {
     });*/
     
   modeRadio = cp5.addRadioButton("mode")
-    .setPosition(1325, 125)
+    .setPosition(1205, 125)
     .setSize(20, 20)
     .setItemsPerRow(1)
     .setSpacingRow(25)
@@ -169,13 +169,13 @@ void setup() {
     ;
     
   copyButton = cp5.addButton("copyActive")
-    .setPosition(1325, 450)
+    .setPosition(1005, 450)
     .setSize(100, 50)
     .setLabel("Copy Haptic Params")
     ;
     
   pasteButton = cp5.addButton("pasteToActive")
-    .setPosition(1450, 450)
+    .setPosition(1130, 450)
     .setSize(100, 50)
     .setLabel("Paste Haptic Params")
     ;
@@ -240,7 +240,7 @@ void draw() {
     // Show 2DIY
     update_animation(angles.x * radsPerDegree, angles.y * radsPerDegree, posEE.x, posEE.y);
     fill(0, 0, 0);
-    int xcoord = 1500;
+    int xcoord = 1180;
     textAlign(RIGHT);
     text("Delay (us): " + nf((int)((currTime - lastTime) / 1000), 4), xcoord, 40);
     text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), xcoord, 60);

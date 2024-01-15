@@ -19,7 +19,7 @@ float              rEE                                = 0.002;
 PShape pGraph, joint, joint1, joint2, endEffector;
 
 void panto_setup() {
-  deviceOrigin.add(width / 2, 0);
+  deviceOrigin.add((width + 200) / 2, 0);
   create_pantagraph();
 }
 
