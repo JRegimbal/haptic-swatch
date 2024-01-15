@@ -156,8 +156,9 @@ CallbackListener CL = new CallbackListener() {
             TableRow row = log.addRow();
             row.setString("timestamp", OffsetDateTime.now().toString());
             row.setString("command", "lock");
-            row.setInt("element", id);
-            row.setString("primary", String.valueOf(val));
+            row.setInt("element", activeSwatch.getId());
+            row.setInt("primary", id);
+            row.setString("secondary", String.valueOf(val));
           }
         }
       }
@@ -176,7 +177,7 @@ CallbackListener modeLog = new CallbackListener() {
         if (isManual) {
           row.setString("primary", "manual");
         } else {
-          row.setString("primary", "automous");
+          row.setString("primary", "autonomous");
         }
       }
     }
