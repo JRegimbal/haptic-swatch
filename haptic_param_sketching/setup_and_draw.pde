@@ -4,6 +4,8 @@ void setup() {
   frameRate(baseFrameRate);
     
   filt = new Butter2();
+  PFont pfont = createFont("Sans", 20);
+  ControlFont font = new ControlFont(pfont, 12);
   
   /** Logging */
   log = new Table();
@@ -28,7 +30,8 @@ void setup() {
     .setCaptionLabel("Spring k")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL)
-    .onChange(knobLog);
+    .onChange(knobLog)
+    .setFont(font);
   checkK = cp5.addToggle("checkK")
     .setValue(true)
     .setSize(20, 20)
@@ -42,6 +45,7 @@ void setup() {
     .setCaptionLabel("Friction mu")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL)
+    .setFont(font)
     .onChange(knobLog);
   checkMu = cp5.addToggle("checkMu")
     .setValue(true)
@@ -56,6 +60,7 @@ void setup() {
     .setCaptionLabel("Max Vib. 1 (N)")
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL)
+    .setFont(font)
     .onChange(knobLog);
   checkA1 = cp5.addToggle("checkA1")
     .setValue(true)
@@ -68,6 +73,7 @@ void setup() {
     .setPosition(200, 150)
     .setRadius(50)
     .setCaptionLabel("Vib. Freq. 1 (Hz)")
+    .setFont(font)
     .setColorCaptionLabel(color(20, 20, 20))
     .setDragDirection(Knob.VERTICAL)
     .onChange(knobLog);
@@ -83,6 +89,7 @@ void setup() {
     .setRadius(50)
     .setCaptionLabel("Max Vib. 2 (N)")
     .setColorCaptionLabel(color(20, 20, 20))
+    .setFont(font)
     .setDragDirection(Knob.VERTICAL)
     .onChange(knobLog);
   checkA2 = cp5.addToggle("checkA2")
@@ -97,6 +104,7 @@ void setup() {
     .setRadius(50)
     .setCaptionLabel("Vib. Freq. 2 (Hz)")
     .setColorCaptionLabel(color(20, 20, 20))
+    .setFont(font)
     .setDragDirection(Knob.VERTICAL)
     .onChange(knobLog);
   checkF2 = cp5.addToggle("checkF2")
@@ -108,6 +116,7 @@ void setup() {
     .setPosition(75, 600)
     .setSize(100, 25)
     .setCaptionLabel("Manual/Autonomous Toggle (Z)")
+    .setFont(font)
     .setColorCaptionLabel(color(20, 20, 20))
     .setMode(ControlP5.SWITCH)
     .onChange(modeLog);
@@ -116,23 +125,27 @@ void setup() {
     .setPosition(50, 450)
     .setSize(100,50)
     .setValue(1)
-    .setLabel("Like this path (Q)");  
+    .setFont(font)
+    .setLabel("Like this\npath (Q)");  
   negPathFb = cp5.addButton("processNegPathFb")
     .setPosition(50, 510)
     .setSize(100, 50)
     .setValue(0)
-    .setLabel("Dislike this path (A)");
+    .setFont(font)
+    .setLabel("Dislike this\npath (A)");
     
   posZoneFb = cp5.addButton("processPosZoneFb")
     .setPosition(200, 450)
     .setSize(100, 50)
     .setValue(1)
-    .setLabel("Like this zone (W)");
+    .setFont(font)
+    .setLabel("Like this\nzone (W)");
   negPathFb = cp5.addButton("processNegZoneFb")
     .setPosition(200, 510)
     .setSize(100, 50)
     .setValue(0)
-    .setLabel("Dislike this zone (S)");
+    .setFont(font)
+    .setLabel("Dislike this\nzone (S)");
     
   /*rewardModeToggle = cp5.addToggle("rewardMode")
     .setPosition(75, 575)
@@ -167,17 +180,23 @@ void setup() {
     .setColorLabel(color(0))
     .activate(0)
     ;
+  
+  for(Toggle t: modeRadio.getItems()) {
+    t.setFont(font);
+  }
     
   copyButton = cp5.addButton("copyActive")
     .setPosition(1005, 450)
     .setSize(100, 50)
-    .setLabel("Copy Haptic Params")
+    .setFont(font)
+    .setLabel("Copy\nHaptic Params")
     ;
     
   pasteButton = cp5.addButton("pasteToActive")
     .setPosition(1130, 450)
     .setSize(100, 50)
-    .setLabel("Paste Haptic Params")
+    .setFont(font)
+    .setLabel("Paste\nHaptic Params")
     ;
     
   /** Haply */
@@ -247,12 +266,16 @@ void draw() {
     text("Max speed (mm/s): " + nf((int)(maxSpeed * 1000), 3), xcoord, 80);
     text("Texture (N): " + nf((int)fEE.mag()), xcoord, 100);
     // Clipboard
+    textSize(24);
     text("Clipboard value", xcoord, 550);
+    textSize(12);
     text("k: " + nf(clipboard.k, 3, 2) + "        mu: " + nf(clipboard.mu, 1, 2), xcoord, 575);
     text("Vib 1: " + nf(clipboard.maxA1, 1, 2) + " Freq 1: " + nf(clipboard.freq1, 3, 1), xcoord, 600);
     text("Vib 2: " + nf(clipboard.maxA2, 1, 2) + " Freq 2: " + nf(clipboard.freq2, 3, 1), xcoord, 625);
     textAlign(CENTER);
+    textSize(24);
     text(selText, 100, 20);
+    textSize(12);
     fill(255, 255, 255);
     
     // Process move action since last frame
