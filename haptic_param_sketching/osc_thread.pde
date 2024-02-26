@@ -57,9 +57,3 @@ void oscEvent(OscMessage message) {
   }
   refreshKnobs();
 }
-
-float rewardFromDuration(long elapsedMs) {
-  final float oneAtMs = 5000;
-  final float bias = -0.5;
-  return sqrt((float)(elapsedMs / oneAtMs)) + bias;
-}

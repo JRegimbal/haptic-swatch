@@ -175,8 +175,7 @@ void setup() {
     .setItemsPerRow(1)
     .setSpacingRow(25)
     .addItem("Select", 0)
-    .addItem("Move", 1)
-    .addItem("Circle", 2)
+    .addItem("Circle", 1)
     .setColorLabel(color(0))
     .activate(0)
     ;
@@ -202,30 +201,6 @@ void setup() {
   /** Haply */
   haplyBoard = new Board(this, Serial.list()[0], 0);
   widget = haplysetup(widgetID, haplyBoard);
-  /*widget = new Device(widgetID, haplyBoard);
-  if (version == HaplyVersion.V2) {
-    pantograph = new Pantograph(2);
-    widget.set_mechanism(pantograph);
-    widget.add_actuator(1, CCW, 2);
-    widget.add_actuator(2, CW, 1);
-    widget.add_encoder(1, CCW, 241, 10752, 2);
-    widget.add_encoder(2, CW, -61, 10752, 1);
-  } else if (version == HaplyVersion.V3 || version == HaplyVersion.V3_1) {
-    pantograph = new Pantograph(3);
-    widget.set_mechanism(pantograph);
-    widget.add_actuator(1, CCW, 2);
-    widget.add_actuator(2, CCW, 1);
-    if (version == HaplyVersion.V3) {
-      widget.add_encoder(1, CCW, 97.23, 2048*2.5*1.0194*1.0154, 2);   //right in theory
-      widget.add_encoder(2, CCW, 82.77, 2048*2.5*1.0194, 1);    //left in theory
-    } else {
-      //widget.add_encoder(1, CCW, 166.58, 2048*2.5*1.0194*1.0154, 2);   //right in theory
-      //widget.add_encoder(2, CCW, 11.11, 2048*2.5*1.0194, 1);    //left in theory
-      widget.add_encoder(1, CCW, 168, 4880, 2);   //right in theory
-      widget.add_encoder(2, CCW, 12, 4880, 1);    //left in theory
-    }
-  }
-  widget.device_set_parameters();*/
   panto_setup();
 
   resetAgents();
@@ -280,7 +255,7 @@ void draw() {
     
     // Process move action since last frame
     PVector mouse = pixel_to_graphics(mouseX, mouseY);
-    if (mousePressed && mode == InputMode.MOVE && moveInterimCoordinates != null) {
+    if (mousePressed && mode == InputMode.SELECT && moveInterimCoordinates != null) {
       for (Handle h : handleBuffer) {
         TableRow row = log.addRow();
         row.setString("timestamp", OffsetDateTime.now().toString());

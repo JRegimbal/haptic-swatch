@@ -19,7 +19,6 @@ public enum HaplyVersion {
 
 public enum InputMode {
   SELECT,
-  MOVE,
   CIRCLE
 }
 
@@ -189,7 +188,11 @@ boolean mouseInWorkspace() {
   return (mouse.x > -xExtent - 19e-3 && mouse.x < xExtent - 19e-3 && mouse.y < yExtent && mouse.y > 0f);
 }
 
-void mouseClicked() {
+void mouseReleased() {
+  moveInterimCoordinates = null;
+}
+
+void mousePressed(MouseEvent event) {
   if (mouseInWorkspace()) {
     PVector mouse = pixel_to_graphics(mouseX, mouseY);
     if (mode == InputMode.SELECT) {
@@ -215,6 +218,7 @@ void mouseClicked() {
         }
         if (clickedInHandle) {
           activateSwatch(s);
+          moveInterimCoordinates = mouse;
           break;
         }
       }
@@ -240,35 +244,6 @@ void mouseClicked() {
       s.reset();
       activateSwatch(s);
       s.ready = true;
-    }
-  }
-}
-
-void mouseReleased() {
-  moveInterimCoordinates = null;
-}
-
-void mousePressed(MouseEvent event) {
-  if (mouseInWorkspace()) {
-    PVector mouse = pixel_to_graphics(mouseX, mouseY);
-    if (mode == InputMode.MOVE) {
-      if (moveInterimCoordinates == null) {
-        // Starting new drag (possibly!)
-        for (HapticSwatch s: swatches.values()) {
-          for (Handle h : s.getHandles()) {
-            if (dist(mouse.x, mouse.y, h.pos.x, h.pos.y) < h.r) {
-              if (!handleBuffer.contains(h)) {
-                handleBuffer.add(h);
-                break;
-              }
-            }
-          }
-        }
-        if (handleBuffer.size() > 0) {
-          // Start drag!
-          moveInterimCoordinates = mouse;
-        }
-      }
     }
   }
 }
@@ -345,31 +320,6 @@ void keyPressed() {
       }
     }
   }
-  else if (key == 'r' || key == 'R') {
-    if (rwMode == RewardMode.ATTENTION) {
-      // request new state
-      if (activeSwatch != null) {
-        synchronized(activeSwatch) {
-          OscMessage msg = new OscMessage("/controller/reward");
-          msg.add(activeSwatch.getId());
-          msg.add(rewardFromDuration(activeSwatch.elapsed));
-          oscp5.send(msg, oscDestination);
-          msg = new OscMessage("/controller/step");
-          msg.add(activeSwatch.getId());
-          oscp5.send(msg, oscDestination);
-        }
-        println("Request sent!");
-      } else {
-        println("No active swatch set - no action taken.");
-      }
-    } else {
-      println("Request does nothing in reward mode '" + rwMode + "'. (Debug reset is now y/Y.)");
-    }
-  }
-  /*else if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
-    int keyVal = int(key) - 48;
-    activateSwatch(swatches.get(keyVal - 1));
-  }*/
   else if (key == '1' || key == '2' || key == '3') {
     int val = key - 49;
     Toggle tmp = modeRadio.getItem(val);
@@ -493,18 +443,17 @@ void mode(int value) {
   if (value == 0) {
     mode = InputMode.SELECT;
   } else if (value == 1) {
-    mode = InputMode.MOVE;
-  } else if (value == 2) {
+    //mode = InputMode.MOVE;
+  //} else if (value == 2) {
     mode = InputMode.CIRCLE;
   } else {
     println("Unknown mode value: " + value);
   }
   if (oldMode != mode) {
     // Would need logic for polygons or whatever
-    if ((oldMode == InputMode.MOVE || oldMode == InputMode.SELECT) && (mode != InputMode.MOVE && mode != InputMode.SELECT)) {
-      handleBuffer.clear();
-      moveInterimCoordinates = null;
-    }
+    //if ((oldMode == InputMode.MOVE || oldMode == InputMode.SELECT) && (mode != InputMode.MOVE && mode != InputMode.SELECT)) {
+    handleBuffer.clear();
+    moveInterimCoordinates = null;
   }
 }
 
