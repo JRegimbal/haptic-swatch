@@ -198,17 +198,9 @@ void mousePressed(MouseEvent event) {
       for (HapticSwatch s : swatches.values()) {
         for (Handle h : s.getHandles()) {
           if (dist(mouse.x, mouse.y, h.pos.x, h.pos.y) < h.r) {
-            if (keyPressed && key == CODED && keyCode == SHIFT) {
-              if (!handleBuffer.contains(h)) {
-                handleBuffer.add(h);
-              } else {
-                handleBuffer.remove(h);
-              }
-            } else {
-              if (!handleBuffer.contains(h)) {
-                handleBuffer.clear();
-                handleBuffer.add(h);
-              }
+            if (!handleBuffer.contains(h)) {
+              handleBuffer.clear();
+              handleBuffer.add(h);
             }
             clickedInHandle = true;
             break;
@@ -219,9 +211,6 @@ void mousePressed(MouseEvent event) {
           moveInterimCoordinates = mouse;
           break;
         }
-      }
-      if (!clickedInHandle) {
-        handleBuffer.clear();
       }
     } else if (mode == InputMode.CIRCLE) {
       HapticSwatch s = new HapticSwatch(mouse.x, mouse.y, 0.01);
@@ -241,6 +230,10 @@ void mousePressed(MouseEvent event) {
       }
       s.reset();
       activateSwatch(s);
+      handleBuffer.clear();
+      for (Handle h : s.getHandles()) {
+        handleBuffer.add(h);
+      }
       s.ready = true;
     }
   }
@@ -314,11 +307,15 @@ void keyPressed() {
     for (HapticSwatch s : swatches.values()) {
       if (s.isTouching(posEE)) {
         activateSwatch(s);
+        handleBuffer.clear();
+        for (Handle h : s.getHandles()) {
+          handleBuffer.add(h);
+        }
         break;
       }
     }
   }
-  else if (key == '1' || key == '2' || key == '3') {
+  else if (key == '1' || key == '2') {
     int val = key - 49;
     Toggle tmp = modeRadio.getItem(val);
     if (!tmp.getBooleanValue()) tmp.toggle();
@@ -441,17 +438,9 @@ void mode(int value) {
   if (value == 0) {
     mode = InputMode.SELECT;
   } else if (value == 1) {
-    //mode = InputMode.MOVE;
-  //} else if (value == 2) {
     mode = InputMode.CIRCLE;
   } else {
     println("Unknown mode value: " + value);
-  }
-  if (oldMode != mode) {
-    // Would need logic for polygons or whatever
-    //if ((oldMode == InputMode.MOVE || oldMode == InputMode.SELECT) && (mode != InputMode.MOVE && mode != InputMode.SELECT)) {
-    handleBuffer.clear();
-    moveInterimCoordinates = null;
   }
 }
 
