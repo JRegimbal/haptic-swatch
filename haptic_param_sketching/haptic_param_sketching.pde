@@ -7,8 +7,6 @@ import controlP5.*;
 import netP5.*;
 import oscP5.*;
 
-/* TODO better stepping based on active/update work on Wednesday */
-
 private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 
 public enum HaplyVersion {
