@@ -9,7 +9,7 @@ class RangeSlider {
   int Height = 20;
   CallbackListener CL;
   protected float diff = 1.0f;
-  protected boolean rangeLock = false, autoLock = false;
+  protected boolean rangeEnable = true, autoLock = false;
   protected Parameter param = null;
   
   public RangeSlider(String name, ControlP5 cp5, int x, int y, int Width) {
@@ -28,7 +28,7 @@ class RangeSlider {
         public void controlEvent(CallbackEvent evt) {
           Controller c = evt.getController();
           if (c.equals(rangeToggle)) {
-            setRangeLock(rangeToggle.getBooleanValue());
+            setRangeEnable(rangeToggle.getBooleanValue());
           }
         }
       })
@@ -67,7 +67,7 @@ class RangeSlider {
           range.setBroadcast(true);
         } else if (c.equals(rangeToggle)) {
           if (param != null) {
-            param.parameterLock = rangeToggle.getBooleanValue();
+            param.parameterEnable = rangeToggle.getBooleanValue();
           }
         }
       }
@@ -120,7 +120,7 @@ class RangeSlider {
       .setLowValue(p.low)
       .setHighValue(p.high)
       .setBroadcast(true);
-    rangeToggle.setValue(p.parameterLock);
+    rangeToggle.setValue(p.parameterEnable);
   }
   
   public void setParameter(Parameter p) {
@@ -131,7 +131,7 @@ class RangeSlider {
     if (autoLock) {
       slider.lock();
       range.lock();
-    } else if (rangeLock) {
+    } else if (!rangeEnable) {
       range.lock();
       slider.unlock();
     } else {
@@ -145,10 +145,10 @@ class RangeSlider {
     this.refreshLocks();
   }
   
-  public void setRangeLock(boolean lock) {
-    this.rangeLock = lock;
+  public void setRangeEnable(boolean enable) {
+    this.rangeEnable = enable;
     if (param != null) {
-      this.param.parameterLock = this.rangeLock;
+      this.param.parameterEnable = this.rangeEnable;
     }
     this.refreshLocks();
   }

@@ -115,32 +115,32 @@ CallbackListener CL = new CallbackListener() {
           if (c.equals(k.rangeToggle)) {
             println("checkK");
             id = 0;
-            val = activeSwatch.k.parameterLock;
+            val = activeSwatch.k.parameterEnable;
             label = "k";
           } else if (c.equals(b.rangeToggle)) {
             println("checkMu");
             id = 1;
-            val = activeSwatch.mu.parameterLock;
+            val = activeSwatch.mu.parameterEnable;
             label = "mu";
           } else if (c.equals(maxA1.rangeToggle)) {
             println("checkA1");
             id = 2;
-            val = activeSwatch.maxA1.parameterLock;
+            val = activeSwatch.maxA1.parameterEnable;
             label = "A1";
           } else if (c.equals(maxA2.rangeToggle)) {
             println("checkA2");
             id = 4;
-            val = activeSwatch.maxA2.parameterLock;
+            val = activeSwatch.maxA2.parameterEnable;
             label = "A2";
           } else if (c.equals(freq1.rangeToggle)) {
             println("checkF1");
             id = 3;
-            val = activeSwatch.freq1.parameterLock;
+            val = activeSwatch.freq1.parameterEnable;
             label = "F1";
           } else if (c.equals(freq2.rangeToggle)) {
             println("checkF2");
             id = 5;
-            val = activeSwatch.freq2.parameterLock;
+            val = activeSwatch.freq2.parameterEnable;
             label = "F2";
           } else {
             println("ERR - unknown controller");

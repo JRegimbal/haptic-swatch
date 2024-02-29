@@ -33,13 +33,13 @@ class Handle {
 
 class Parameter {
   float value, min, max, low, high;
-  boolean parameterLock;
+  boolean parameterEnable;
   
   public Parameter (float value, float min, float max) {
     this.value = value;
     this.min = this.low = min;
     this.max = this.high = max;
-    this.parameterLock = false;
+    this.parameterEnable = true;
   }
 }
 

@@ -29,35 +29,35 @@ void setup() {
     //.setFont(font)
     ;
   k.rangeToggle.onChange(CL);
-  b = new RangeSlider("mu", cp5, 200, 25, 100)
+  b = new RangeSlider("mu", cp5, 250, 25, 100)
     .setRange(minMu, maxB)
     .setCaptionLabel("Friction mu")
     //.setFont(font)
     //.onChange(knobLog)
     ;
   b.rangeToggle.onChange(CL);
-  maxA1 = new RangeSlider("maxA1", cp5, 50, 150, 100)
+  maxA1 = new RangeSlider("maxA1", cp5, 50, 100, 100)
     .setRange(minAL, MAL)
     .setCaptionLabel("Max Vib. 1 (N)")
     //.setFont(font)
     //.onChange(knobLog)
     ;
   maxA1.rangeToggle.onChange(CL);
-  freq1 = new RangeSlider("freq1", cp5, 200, 150, 100)
+  freq1 = new RangeSlider("freq1", cp5, 250, 100, 100)
     .setRange(minF, maxF)
     .setCaptionLabel("Vib. Freq. 1 (Hz)")
     //.setFont(font)
     //.onChange(knobLog)
     ;
   freq1.rangeToggle.onChange(CL);
-  maxA2 = new RangeSlider("maxA2", cp5, 50, 275, 100)
+  maxA2 = new RangeSlider("maxA2", cp5, 50, 175, 100)
     .setRange(minAH, MAH)
     .setCaptionLabel("Max Vib. 2 (N)")
     //.setFont(font)
     //.onChange(knobLog)
     ;
   maxA2.rangeToggle.onChange(CL);
-  freq2 = new RangeSlider("freq2", cp5, 200, 275, 100)
+  freq2 = new RangeSlider("freq2", cp5, 250, 175, 100)
     .setRange(minF, maxF)
     .setCaptionLabel("Vib. Freq. 2 (Hz)")
     //.setFont(font)
@@ -137,14 +137,14 @@ void setup() {
   }
     
   copyButton = cp5.addButton("copyActive")
-    .setPosition(1005, 450)
+    .setPosition(1040, 450)
     .setSize(100, 50)
     .setFont(font)
     .setLabel("Copy\nHaptic Params")
     ;
     
   pasteButton = cp5.addButton("pasteToActive")
-    .setPosition(1130, 450)
+    .setPosition(1165, 450)
     .setSize(100, 50)
     .setFont(font)
     .setLabel("Paste\nHaptic Params")
