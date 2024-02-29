@@ -10,6 +10,7 @@ class RangeSlider {
   CallbackListener CL;
   protected float diff = 1.0f;
   protected boolean rangeLock = false, autoLock = false;
+  protected Parameter param = null;
   
   public RangeSlider(String name, ControlP5 cp5, int x, int y, int Width) {
     slider = cp5.addSlider(name + "-slider")
@@ -17,7 +18,6 @@ class RangeSlider {
       .setHeight(Height)
       ;
     range = cp5.addRange(name + "-range")
-      .setBroadcast(false)
       .setColorCaptionLabel(color(20, 20, 20))
       .setCaptionLabel("Auto Range")
       .setHeight(Height);
@@ -35,13 +35,7 @@ class RangeSlider {
       ;
     this.setPosition(x, y);
     this.setWidth(Width);
-    slider.setValue(0)
-      .setRange(0, 100)
-      ;
-    range.setRange(0, 100)
-      .setRangeValues(0, 100)
-      .setBroadcast(true)
-      ;
+
     this.cp5 = cp5;
         
     CL = new CallbackListener() {
@@ -54,6 +48,9 @@ class RangeSlider {
           if (slider.getValue() > range.getHighValue()) {
             range.setHighValue(slider.getValue());
           }
+          if (param != null) {
+            param.value = slider.getValue();
+          }
         } else if (c.equals(range)) {
           range.setBroadcast(false);
           if (slider.getValue() < range.getLowValue()) {
@@ -63,13 +60,28 @@ class RangeSlider {
             range.setHighValue(slider.getValue() + diff);
             range.update();
           }
+          if (param != null) {
+            param.low = range.getLowValue();
+            param.high = range.getHighValue();
+          }
           range.setBroadcast(true);
+        } else if (c.equals(rangeToggle)) {
+          if (param != null) {
+            param.parameterLock = rangeToggle.getBooleanValue();
+          }
         }
       }
     };
     
     slider.onChange(CL);
     range.onChange(CL);
+  }
+  
+  public RangeSlider setRange(float min, float max) {
+    slider.setRange(min, max);
+    range.setRange(min, max);
+    range.setRangeValues(min, max);
+    return this;
   }
   
   public RangeSlider setPosition(int x, int y) {
@@ -102,6 +114,19 @@ class RangeSlider {
     return slider.getValue();
   }
   
+  public void setValue(Parameter p) {
+    slider.setValue(p.value);
+    range.setBroadcast(false)
+      .setLowValue(p.low)
+      .setHighValue(p.high)
+      .setBroadcast(true);
+    rangeToggle.setValue(p.parameterLock);
+  }
+  
+  public void setParameter(Parameter p) {
+    this.param = p;
+  }
+  
   protected void refreshLocks() {
     if (autoLock) {
       slider.lock();
@@ -122,6 +147,9 @@ class RangeSlider {
   
   public void setRangeLock(boolean lock) {
     this.rangeLock = lock;
+    if (param != null) {
+      this.param.parameterLock = this.rangeLock;
+    }
     this.refreshLocks();
   }
 }

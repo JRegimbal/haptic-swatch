@@ -22,96 +22,48 @@ void setup() {
   
   /** Controls */
   cp5 = new ControlP5(this);
-  k = cp5.addKnob("k")
+  k = new RangeSlider("k", cp5, 50, 25, 100)
     .setRange(minK, maxK)
-    .setValue(0)
-    .setPosition(50, 25)
-    .setRadius(50)
     .setCaptionLabel("Spring k")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL)
-    .onChange(knobLog)
-    .setFont(font);
-  checkK = cp5.addToggle("checkK")
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(150, 105)
-    .onChange(CL);
-  b = cp5.addKnob("mu")
+    //.onChange(knobLog)
+    //.setFont(font)
+    ;
+  k.rangeToggle.onChange(CL);
+  b = new RangeSlider("mu", cp5, 200, 25, 100)
     .setRange(minMu, maxB)
-    .setValue(0) // unitless
-    .setPosition(200, 25)
-    .setRadius(50)
     .setCaptionLabel("Friction mu")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL)
-    .setFont(font)
-    .onChange(knobLog);
-  checkMu = cp5.addToggle("checkMu")
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(300, 105)
-    .onChange(CL);
-  maxA1 = cp5.addKnob("maxA1")
+    //.setFont(font)
+    //.onChange(knobLog)
+    ;
+  b.rangeToggle.onChange(CL);
+  maxA1 = new RangeSlider("maxA1", cp5, 50, 150, 100)
     .setRange(minAL, MAL)
-    .setValue(0)
-    .setPosition(50, 150)
-    .setRadius(50)
     .setCaptionLabel("Max Vib. 1 (N)")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL)
-    .setFont(font)
-    .onChange(knobLog);
-  checkA1 = cp5.addToggle("checkA1")
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(150, 230)
-    .onChange(CL);
-  freq1 = cp5.addKnob("freq1")
+    //.setFont(font)
+    //.onChange(knobLog)
+    ;
+  maxA1.rangeToggle.onChange(CL);
+  freq1 = new RangeSlider("freq1", cp5, 200, 150, 100)
     .setRange(minF, maxF)
-    .setValue(minF)
-    .setPosition(200, 150)
-    .setRadius(50)
     .setCaptionLabel("Vib. Freq. 1 (Hz)")
-    .setFont(font)
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setDragDirection(Knob.VERTICAL)
-    .onChange(knobLog);
-  checkF1 = cp5.addToggle("checkF1")
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(300, 230)
-    .onChange(CL);
-  maxA2 = cp5.addKnob("maxA2")
+    //.setFont(font)
+    //.onChange(knobLog)
+    ;
+  freq1.rangeToggle.onChange(CL);
+  maxA2 = new RangeSlider("maxA2", cp5, 50, 275, 100)
     .setRange(minAH, MAH)
-    .setValue(0)
-    .setPosition(50, 275)
-    .setRadius(50)
     .setCaptionLabel("Max Vib. 2 (N)")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setFont(font)
-    .setDragDirection(Knob.VERTICAL)
-    .onChange(knobLog);
-  checkA2 = cp5.addToggle("checkA2")
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(150, 355)
-    .onChange(CL);
-  freq2 = cp5.addKnob("freq2")
+    //.setFont(font)
+    //.onChange(knobLog)
+    ;
+  maxA2.rangeToggle.onChange(CL);
+  freq2 = new RangeSlider("freq2", cp5, 200, 275, 100)
     .setRange(minF, maxF)
-    .setValue(minF)
-    .setPosition(200, 275)
-    .setRadius(50)
     .setCaptionLabel("Vib. Freq. 2 (Hz)")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setFont(font)
-    .setDragDirection(Knob.VERTICAL)
-    .onChange(knobLog);
-  checkF2 = cp5.addToggle("checkF2")
-    .setValue(true)
-    .setSize(20, 20)
-    .setPosition(300, 355)
-    .onChange(CL);
+    //.setFont(font)
+    //.onChange(knobLog)
+    ;
+  freq2.rangeToggle.onChange(CL);
   manualTog = cp5.addToggle("isManual")
     .setPosition(75, 600)
     .setSize(100, 25)
@@ -244,9 +196,9 @@ void draw() {
     textSize(24);
     text("Clipboard value", xcoord, 550);
     textSize(12);
-    text("k: " + nf(clipboard.k, 3, 2) + "        mu: " + nf(clipboard.mu, 1, 2), xcoord, 575);
-    text("Vib 1: " + nf(clipboard.maxA1, 1, 2) + " Freq 1: " + nf(clipboard.freq1, 3, 1), xcoord, 600);
-    text("Vib 2: " + nf(clipboard.maxA2, 1, 2) + " Freq 2: " + nf(clipboard.freq2, 3, 1), xcoord, 625);
+    text("k: " + nf(clipboard.k.value, 3, 2) + "        mu: " + nf(clipboard.mu.value, 1, 2), xcoord, 575);
+    text("Vib 1: " + nf(clipboard.maxA1.value, 1, 2) + " Freq 1: " + nf(clipboard.freq1.value, 3, 1), xcoord, 600);
+    text("Vib 2: " + nf(clipboard.maxA2.value, 1, 2) + " Freq 2: " + nf(clipboard.freq2.value, 3, 1), xcoord, 625);
     textAlign(CENTER);
     textSize(24);
     text(selText, 100, 20);
@@ -281,21 +233,12 @@ void draw() {
     
     // Process change in autonomous/manual update mode
     if (lastMode != isManual) {
-      if (isManual) {
-        k.unlock();
-        b.unlock();
-        maxA1.unlock();
-        maxA2.unlock();
-        freq1.unlock();
-        freq2.unlock();
-      } else {
-        k.lock();
-        b.lock();
-        maxA1.lock();
-        maxA2.lock();
-        freq1.lock();
-        freq2.lock();
-      }
+      k.setAutoLock(!isManual);
+      b.setAutoLock(!isManual);
+      maxA1.setAutoLock(!isManual);
+      maxA2.setAutoLock(!isManual);
+      freq1.setAutoLock(!isManual);
+      freq2.setAutoLock(!isManual);
       OscMessage msg = new OscMessage("/uistate/setAutonomous");
       msg.add(isManual);
       oscp5.send(msg, oscDestination);

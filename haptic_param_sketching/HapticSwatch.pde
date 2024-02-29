@@ -31,14 +31,26 @@ class Handle {
   }
 }
 
+class Parameter {
+  float value, min, max, low, high;
+  boolean parameterLock;
+  
+  public Parameter (float value, float min, float max) {
+    this.value = value;
+    this.min = this.low = min;
+    this.max = this.high = max;
+    this.parameterLock = false;
+  }
+}
+
 class HapticParams {
-  public float k, mu, maxA1, maxA2, freq1, freq2;
+  public Parameter k, mu, maxA1, maxA2, freq1, freq2;
   
   public HapticParams() {
-    k = mu = maxA1 = maxA2 = freq1 = freq2 = 0f;
+    k = mu = maxA1 = maxA2 = freq1 = freq2 = new Parameter(0, 0, 100);
   }
   
-  public HapticParams(float k, float mu, float maxA1, float maxA2, float freq1, float freq2) {
+  public HapticParams(Parameter k, Parameter mu, Parameter maxA1, Parameter maxA2, Parameter freq1, Parameter freq2) {
     this.k = k;
     this.mu = mu;
     this.maxA1 = maxA1;
@@ -51,9 +63,8 @@ class HapticParams {
 class HapticSwatch {
   public float radius; // m
   public Handle h;
-  public float k, mu, maxA1, maxA2, freq1, freq2;
+  public Parameter k, mu, maxA1, maxA2, freq1, freq2;
   protected float lastK, lastMu, lastA1, lastA2, lastF1, lastF2;
-  public boolean checkK, checkMu, checkA1, checkA2, checkF1, checkF2;
   private int id;
   public long elapsed = 0;
   
@@ -79,13 +90,20 @@ class HapticSwatch {
     id = (nextID++);
     h = new Handle(x, y, id);
     radius = r;
+    k = new Parameter(0, minK, maxK);
+    mu = new Parameter(0, minMu, maxB);
+    maxA1 = new Parameter(0, minAL, MAL);
+    maxA2 = new Parameter(0, minAH, MAH);
+    freq1 = new Parameter(minF, minF, maxF);
+    freq2 = new Parameter(minF, minF, maxF);
+
     reset();
-    checkK = checkMu = checkA1 = checkA2 = checkF1 = checkF2 = true;
+    println("Init");
   }
 
   public void reset() {
-    k = mu = maxA1 = maxA2 = 0;
-    freq1 = freq2 = minF;
+    k.value = mu.value = maxA1.value = maxA2.value = 0;
+    freq1.value = freq2.value = minF;
   }
   
   public int getId() { return id; }
@@ -95,12 +113,12 @@ class HapticSwatch {
   }
   
   public String valueString() {
-    return "[" + (k - minK) / (maxK - minK) + "," +
-      (mu - minMu) / (maxB - minMu) + "," +
-      (maxA1 - minAL) / (MAL - minAL) + "," +
-      (freq1 - minF) / (maxF - minF) + "," +
-      (maxA2 - minAH) / (MAH - minAH) + "," +
-      (freq2 - minF) / (maxF - minF) + "]";
+    return "[" + (k.value - minK) / (maxK - minK) + "," +
+      (mu.value - minMu) / (maxB - minMu) + "," +
+      (maxA1.value - minAL) / (MAL - minAL) + "," +
+      (freq1.value - minF) / (maxF - minF) + "," +
+      (maxA2.value - minAH) / (MAH - minAH) + "," +
+      (freq2.value - minF) / (maxF - minF) + "]";
   }
   
   public String locString() {
@@ -114,7 +132,7 @@ class HapticSwatch {
   }
   
   public boolean newState() {
-    return (k != lastK) || (mu != lastMu) || (maxA1 != lastA1) || (maxA2 != lastA2) || (freq1 != lastF1) || (freq2 != lastF2);
+    return (k.value != lastK) || (mu.value != lastMu) || (maxA1.value != lastA1) || (maxA2.value != lastA2) || (freq1.value != lastF1) || (freq2.value != lastF2);
   }
   
   public boolean isTouching(PVector posEE) {
@@ -123,12 +141,12 @@ class HapticSwatch {
   }
   
   public void refresh() {
-    lastK = k;
-    lastMu = mu;
-    lastA1 = maxA1;
-    lastA2 = maxA2;
-    lastF1 = freq1;
-    lastF2 = freq2;
+    lastK = k.value;
+    lastMu = mu.value;
+    lastA1 = maxA1.value;
+    lastA2 = maxA2.value;
+    lastF1 = freq1.value;
+    lastF2 = freq2.value;
   }
   
   ArrayList<Handle> getHandles() {
@@ -147,25 +165,25 @@ class HapticSwatch {
     float speed = velEE.mag();
     if (isTouching(posEE)) {
       // Spring
-      if (k >= 0f) {
+      if (k.value >= 0f) {
         rDiff.setMag(radius - rDiff.mag());
       }
-      forceTmp.add(rDiff.mult(k));
+      forceTmp.add(rDiff.mult(k.value));
       // Friction
       final float vTh = 0.1;
       final float mass = 0.25; // kg
       final float fnorm = mass * 9.81; // kg * m/s^2 (N)
-      final float b = fnorm * mu / vTh; // kg / s
+      final float b = fnorm * mu.value / vTh; // kg / s
       if (speed < vTh) {
         forceTmp.add(velEE.copy().mult(-b));
       } else {
-        forceTmp.add(velEE.copy().setMag(-mu * fnorm));
+        forceTmp.add(velEE.copy().setMag(-mu.value * fnorm));
       }
       // Texture
       final float maxV = vTh;
       forceTmp.add(velEE.copy().rotate(HALF_PI).setMag(
-          min(maxA2, speed * maxA2 / maxV) * sin(textureConst * freq2* samp) +
-          min(maxA1, speed * maxA1 / maxV) * sin(textureConst * freq1 * samp)
+          min(maxA2.value, speed * maxA2.value / maxV) * sin(textureConst * freq2.value * samp) +
+          min(maxA1.value, speed * maxA1.value / maxV) * sin(textureConst * freq1.value * samp)
       ));
       if (!posEE.equals(posEELast)) {
         // Require end effector to be moving for activation

@@ -8,12 +8,12 @@ class UpdateThread implements Runnable {
             if (isManual) {
               OscMessage msg = new OscMessage("/controller/manualSet");
               msg.add(s.getId());
-              msg.add((s.k - minK) / (maxK - minK));
-              msg.add((s.mu - minMu) / (maxB - minMu));
-              msg.add((s.maxA1 - minAL) / (MAL - minAL));
-              msg.add((s.freq1 - minF) / (maxF - minF));
-              msg.add((s.maxA2 - minAH) / (MAH - minAH));
-              msg.add((s.freq2 - minF) / (maxF - minF));
+              msg.add((s.k.value - minK) / (maxK - minK));
+              msg.add((s.mu.value - minMu) / (maxB - minMu));
+              msg.add((s.maxA1.value - minAL) / (MAL - minAL));
+              msg.add((s.freq1.value - minF) / (maxF - minF));
+              msg.add((s.maxA2.value - minAH) / (MAH - minAH));
+              msg.add((s.freq2.value - minF) / (maxF - minF));
               oscp5.send(msg, oscDestination);
               // TODO check if we should update only once or on each active timestep
             } else {
@@ -46,14 +46,14 @@ void oscEvent(OscMessage message) {
     row.setString("timestamp", OffsetDateTime.now().toString());
     row.setString("command", "modify");
     row.setInt("element", ID);
-    swatch.k = message.get(1).floatValue() * (maxK - minK) + minK;
-    swatch.mu = message.get(2).floatValue() * (maxB - minMu) + minMu;
-    swatch.maxA1 = message.get(3).floatValue() * (MAL - minAL) + minAL;
-    swatch.freq1 = message.get(4).floatValue() * (maxF - minF) + minF;
-    swatch.maxA2 = message.get(5).floatValue() * (MAH - minAH) + minAH;
-    swatch.freq2 = message.get(6).floatValue() * (maxF - minF) + minF;
+    swatch.k.value = message.get(1).floatValue() * (maxK - minK) + minK;
+    swatch.mu.value = message.get(2).floatValue() * (maxB - minMu) + minMu;
+    swatch.maxA1.value = message.get(3).floatValue() * (MAL - minAL) + minAL;
+    swatch.freq1.value = message.get(4).floatValue() * (maxF - minF) + minF;
+    swatch.maxA2.value = message.get(5).floatValue() * (MAH - minAH) + minAH;
+    swatch.freq2.value = message.get(6).floatValue() * (maxF - minF) + minF;
     row.setString("primary", swatch.valueString());
     row.setString("secondary", "agent");
   }
-  refreshKnobs();
+  refreshRangeSliders();
 }

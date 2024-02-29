@@ -32,8 +32,7 @@ boolean isManual = true;
 boolean isSwitch = false; // ignore logging when action is side effect from switching active swatch
 boolean lastMode = isManual;
 ControlP5 cp5;
-Knob k, b, freq1, freq2, maxA1, maxA2;
-Toggle checkK, checkMu, checkF1, checkF2, checkA1, checkA2;
+RangeSlider k, b, freq1, freq2, maxA1, maxA2;
 Toggle manualTog, rewardModeToggle;
 Button posPathFb, negPathFb, posZoneFb, negZoneFb;
 RadioButton modeRadio;
@@ -101,6 +100,7 @@ CallbackListener knobLog = new CallbackListener() {
   }
 };
 
+// Switching to new selected swatch
 CallbackListener CL = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {
     if (activeSwatch != null) {
@@ -112,35 +112,35 @@ CallbackListener CL = new CallbackListener() {
           boolean val;
           String label;
           msg.add(activeSwatch.getId());
-          if (c.equals(checkK)) {
+          if (c.equals(k.rangeToggle)) {
             println("checkK");
             id = 0;
-            val = activeSwatch.checkK;
+            val = activeSwatch.k.parameterLock;
             label = "k";
-          } else if (c.equals(checkMu)) {
+          } else if (c.equals(b.rangeToggle)) {
             println("checkMu");
             id = 1;
-            val = activeSwatch.checkMu;
+            val = activeSwatch.mu.parameterLock;
             label = "mu";
-          } else if (c.equals(checkA1)) {
+          } else if (c.equals(maxA1.rangeToggle)) {
             println("checkA1");
             id = 2;
-            val = activeSwatch.checkA1;
+            val = activeSwatch.maxA1.parameterLock;
             label = "A1";
-          } else if (c.equals(checkA2)) {
+          } else if (c.equals(maxA2.rangeToggle)) {
             println("checkA2");
             id = 4;
-            val = activeSwatch.checkA2;
+            val = activeSwatch.maxA2.parameterLock;
             label = "A2";
-          } else if (c.equals(checkF1)) {
+          } else if (c.equals(freq1.rangeToggle)) {
             println("checkF1");
             id = 3;
-            val = activeSwatch.checkF1;
+            val = activeSwatch.freq1.parameterLock;
             label = "F1";
-          } else if (c.equals(checkF2)) {
+          } else if (c.equals(freq2.rangeToggle)) {
             println("checkF2");
             id = 5;
-            val = activeSwatch.checkF2;
+            val = activeSwatch.freq2.parameterLock;
             label = "F2";
           } else {
             println("ERR - unknown controller");
@@ -163,6 +163,8 @@ CallbackListener CL = new CallbackListener() {
   }
 };
 
+
+// Mode changes
 CallbackListener modeLog = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {
     Controller c = evt.getController();
@@ -262,36 +264,23 @@ void mouseWheel(MouseEvent event) {
 void activateSwatch(HapticSwatch swatch) {
   activeSwatch = swatch;
   for (HapticSwatch s : swatches.values()) {
-    k.unplugFrom(s);
-    checkK.unplugFrom(s);
-    b.unplugFrom(s);
-    checkMu.unplugFrom(s);
-    maxA1.unplugFrom(s);
-    checkA1.unplugFrom(s);
-    freq1.unplugFrom(s);
-    checkF1.unplugFrom(s);
-    maxA2.unplugFrom(s);
-    checkA2.unplugFrom(s);
-    freq2.unplugFrom(s);
-    checkF2.unplugFrom(s);
+    k.setParameter(null);
+    b.setParameter(null);
+    freq1.setParameter(null);
+    maxA1.setParameter(null);
+    freq2.setParameter(null);
+    maxA2.setParameter(null);
   }
   if (activeSwatch != null) {
-    k.plugTo(activeSwatch);
-    checkK.plugTo(activeSwatch);
-    b.plugTo(activeSwatch);
-    checkMu.plugTo(activeSwatch);
-    maxA1.plugTo(activeSwatch);
-    checkA1.plugTo(activeSwatch);
-    freq1.plugTo(activeSwatch);
-    checkF1.plugTo(activeSwatch);
-    maxA2.plugTo(activeSwatch);
-    checkA2.plugTo(activeSwatch);
-    freq2.plugTo(activeSwatch);
-    checkF2.plugTo(activeSwatch);
+    k.setParameter(activeSwatch.k);
+    b.setParameter(activeSwatch.mu);
+    freq1.setParameter(activeSwatch.freq1);
+    maxA1.setParameter(activeSwatch.maxA1);
+    freq2.setParameter(activeSwatch.freq2);
+    maxA2.setParameter(activeSwatch.maxA2);
   }
   
-  refreshKnobs();
-  refreshToggles();
+  refreshRangeSliders();
   selText = (activeSwatch != null) ? ("Swatch " + activeSwatch.getId()) : ("NONE");
 }
 
@@ -336,7 +325,7 @@ void keyPressed() {
   }
   else if (key == '0') {
     resetAgents();
-    refreshKnobs();
+    refreshRangeSliders();
   }
   else if (key == '-') {
     if (activeSwatch != null) {
@@ -349,7 +338,7 @@ void keyPressed() {
         msg.add(1f / nsteps);
         oscp5.send(msg, oscDestination);
         activeSwatch.reset();
-        refreshKnobs();
+        refreshRangeSliders();
       }
       TableRow row = log.addRow();
       row.setString("timestamp", OffsetDateTime.now().toString());
@@ -403,7 +392,7 @@ void resetAgents() {
   }
 }
 
-void refreshKnobs() {
+void refreshRangeSliders() {
   if (activeSwatch != null) {
     synchronized(activeSwatch) {
       isSwitch = true;
@@ -413,21 +402,6 @@ void refreshKnobs() {
       freq1.setValue(activeSwatch.freq1);
       maxA2.setValue(activeSwatch.maxA2);
       freq2.setValue(activeSwatch.freq2);
-      isSwitch = false;
-    }
-  }
-}
-
-void refreshToggles() {
-  if (activeSwatch != null) {
-    synchronized(activeSwatch) {
-      isSwitch = true;
-      checkK.setValue(activeSwatch.checkK);
-      checkMu.setValue(activeSwatch.checkMu);
-      checkA1.setValue(activeSwatch.checkA1);
-      checkF1.setValue(activeSwatch.checkF1);
-      checkA2.setValue(activeSwatch.checkA2);
-      checkF2.setValue(activeSwatch.checkF2);
       isSwitch = false;
     }
   }
@@ -537,7 +511,7 @@ void pasteToActive() {
   if (activeSwatch != null) {
     synchronized(activeSwatch) {
       activeSwatch.setParams(clipboard);
-      refreshKnobs();
+      refreshRangeSliders();
     }
   }
 }
