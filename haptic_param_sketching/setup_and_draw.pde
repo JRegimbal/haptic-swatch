@@ -28,6 +28,7 @@ void setup() {
     //.onChange(knobLog)
     //.setFont(font)
     ;
+  k.slider.onChange(knobLog);
   k.rangeToggle.onChange(CL);
   b = new RangeSlider("mu", cp5, 250, 25, 100)
     .setRange(minMu, maxB)
@@ -35,6 +36,7 @@ void setup() {
     //.setFont(font)
     //.onChange(knobLog)
     ;
+  b.slider.onChange(knobLog);
   b.rangeToggle.onChange(CL);
   maxA1 = new RangeSlider("maxA1", cp5, 50, 100, 100)
     .setRange(minAL, MAL)
@@ -42,6 +44,7 @@ void setup() {
     //.setFont(font)
     //.onChange(knobLog)
     ;
+  maxA1.slider.onChange(knobLog);
   maxA1.rangeToggle.onChange(CL);
   freq1 = new RangeSlider("freq1", cp5, 250, 100, 100)
     .setRange(minF, maxF)
@@ -49,6 +52,7 @@ void setup() {
     //.setFont(font)
     //.onChange(knobLog)
     ;
+  freq1.slider.onChange(knobLog);
   freq1.rangeToggle.onChange(CL);
   maxA2 = new RangeSlider("maxA2", cp5, 50, 175, 100)
     .setRange(minAH, MAH)
@@ -56,6 +60,7 @@ void setup() {
     //.setFont(font)
     //.onChange(knobLog)
     ;
+  maxA2.slider.onChange(knobLog);
   maxA2.rangeToggle.onChange(CL);
   freq2 = new RangeSlider("freq2", cp5, 250, 175, 100)
     .setRange(minF, maxF)
@@ -63,6 +68,7 @@ void setup() {
     //.setFont(font)
     //.onChange(knobLog)
     ;
+  freq2.slider.onChange(knobLog);
   freq2.rangeToggle.onChange(CL);
   manualTog = cp5.addToggle("isManual")
     .setPosition(75, 600)
