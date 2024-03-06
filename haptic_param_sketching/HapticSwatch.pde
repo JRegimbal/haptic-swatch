@@ -41,6 +41,37 @@ class Parameter {
     this.max = this.high = max;
     this.parameterEnable = true;
   }
+  
+  public float normLow() {
+    return (this.low - this.min) / (this.max - this.min);
+  }
+  
+  public float normHigh() {
+    return (this.high - this.min) / (this.max - this.min);
+  }
+  
+  public float normVal() {
+    return (this.value - this.min) / (this.max - this.min);
+  }
+  
+  public OscMessage addNormMessage(OscMessage msg) {
+    msg.add(this.normVal());
+    msg.add(this.normLow());
+    msg.add(this.normHigh());
+    return msg;
+  }
+  
+  public void setNormVal(float norm) {
+    float newValue = norm * (this.max - this.min) + this.min;
+    if (newValue < this.low) {
+      println("FP Error: " + newValue + " is lower than " + this.low);
+      newValue = this.low;
+    } else if (newValue > this.high) {
+      println("FP Error: " + newValue + " is greater than " + this.high);
+      newValue = this.high;
+    }
+    this.value = newValue;
+  }
 }
 
 class HapticParams {
@@ -113,12 +144,31 @@ class HapticSwatch {
   }
   
   public String valueString() {
-    return "[" + (k.value - minK) / (maxK - minK) + "," +
-      (mu.value - minMu) / (maxB - minMu) + "," +
-      (maxA1.value - minAL) / (MAL - minAL) + "," +
-      (freq1.value - minF) / (maxF - minF) + "," +
-      (maxA2.value - minAH) / (MAH - minAH) + "," +
-      (freq2.value - minF) / (maxF - minF) + "]";
+    return "[" + k.normVal() + "," + k.normLow() + "," + k.normHigh() + "," +
+      mu.normVal() + "," + mu.normLow() + "," + mu.normHigh() + "," +
+      maxA1.normVal() + "," + maxA1.normLow() + "," + maxA1.normHigh() + "," +
+      freq1.normVal() + "," + freq1.normLow() + "," + freq1.normHigh() + "," +
+      maxA2.normVal() + "," + maxA2.normLow() + "," + maxA2.normHigh() + "," +
+      freq2.normVal() + "," + freq2.normLow() + "," + freq2.normHigh() + "]";
+  }
+  
+  public void processOscSet(OscMessage msg) {
+    this.k.setNormVal(msg.get(1).floatValue());
+    this.mu.setNormVal(msg.get(2).floatValue());
+    this.maxA1.setNormVal(msg.get(3).floatValue());
+    this.freq1.setNormVal(msg.get(4).floatValue());
+    this.maxA2.setNormVal(msg.get(5).floatValue());
+    this.freq2.setNormVal(msg.get(6).floatValue());
+  }
+  
+  public OscMessage addNormMessage(OscMessage msg) {
+    msg = this.k.addNormMessage(msg);
+    msg = this.mu.addNormMessage(msg);
+    msg = this.maxA1.addNormMessage(msg);
+    msg = this.freq1.addNormMessage(msg);
+    msg = this.maxA2.addNormMessage(msg);
+    msg = this.freq2.addNormMessage(msg);
+    return msg;
   }
   
   public String locString() {

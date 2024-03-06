@@ -98,12 +98,7 @@ CallbackListener knobLog = new CallbackListener() {
       row.setString("secondary", "user");
       OscMessage msg = new OscMessage("/controller/updateManual");
       msg.add(activeSwatch.getId());
-      msg.add((activeSwatch.k.value - minK) / (maxK - minK));
-      msg.add((activeSwatch.mu.value - minMu) / (maxB - minMu));
-      msg.add((activeSwatch.maxA1.value - minAL) / (MAL - minAL));
-      msg.add((activeSwatch.freq1.value - minF) / (maxF - minF));
-      msg.add((activeSwatch.maxA2.value - minAH) / (MAH - minAH));
-      msg.add((activeSwatch.freq2.value - minF) / (maxF - minF));
+      msg = activeSwatch.addNormMessage(msg);
       oscp5.send(msg, oscDestination);
     }
   }
