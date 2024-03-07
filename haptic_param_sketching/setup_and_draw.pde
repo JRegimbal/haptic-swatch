@@ -247,7 +247,9 @@ void draw() {
       freq2.setAutoLock(!isManual);
       OscMessage msg = new OscMessage("/uistate/setAutonomous");
       msg.add(isManual);
+      println("Trig");
       oscp5.send(msg, oscDestination);
+      println("Done");
       lastMode = isManual;
     }
   }

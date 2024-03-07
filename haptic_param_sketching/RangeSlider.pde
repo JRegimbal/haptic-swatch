@@ -120,7 +120,9 @@ class RangeSlider {
       .setLowValue(p.low)
       .setHighValue(p.high)
       .setBroadcast(true);
-    rangeToggle.setValue(p.parameterEnable);
+    if (p.parameterEnable != rangeToggle.getBooleanValue()) {
+      rangeToggle.setValue(p.parameterEnable);
+    }
   }
   
   public void setParameter(Parameter p) {
