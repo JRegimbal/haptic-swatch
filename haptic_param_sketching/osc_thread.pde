@@ -48,6 +48,11 @@ void oscEvent(OscMessage message) {
     }
     refreshRangeSliders();
     return;
+  } else if (message.checkAddrPattern("/controller/rewardImpact")) {
+    int ID = message.get(0).intValue();
+    if (ID == activeSwatch.getId()) {
+      message.printData();
+    }
   }
   println("Unexpected message: " + message.addrPattern());
 }
