@@ -70,6 +70,38 @@ void setup() {
     ;
   freq2.slider.onChange(knobLog);
   freq2.rangeToggle.onChange(CL);
+  audFreq = new RangeSlider("audFreq", cp5, 50, 250, 100)
+    .setRange(minAudF, maxAudF) // A2 to A5
+    .setCaptionLabel("Frequency (Hz)")
+    ;
+  audFreq.slider.onChange(knobLog);
+  audFreq.rangeToggle.onChange(CL);
+  audMix = new RangeSlider("audMix", cp5, 250, 250, 100)
+    .setRange(minMix, maxMix)
+    .setCaptionLabel("Noise Mix")
+    ;
+  audMix.slider.onChange(knobLog);
+  audMix.rangeToggle.onChange(CL);
+  audAtk = new RangeSlider("audAtk", cp5, 50, 325, 100)
+    .setRange(minAtk, maxAtk)
+    .setCaptionLabel("Attack (s)")
+    ;
+  audAtk.slider.onChange(knobLog);
+  audAtk.rangeToggle.onChange(CL);
+  audRel = new RangeSlider("audRel", cp5, 250, 325, 100)
+    .setRange(minRel, maxRel)
+    .setCaptionLabel("Release (s)")
+    ;
+  audRel.slider.onChange(knobLog);
+  audRel.rangeToggle.onChange(CL);
+  audReson = new RangeSlider("audReson", cp5, 50, 400, 100)
+    .setRange(minReson, maxReson)
+    .setCaptionLabel("Resonance")
+    ;
+  audReson.slider.onChange(knobLog);
+  audReson.rangeToggle.onChange(CL);
+  
+  
   manualTog = cp5.addToggle("isManual")
     .setPosition(75, 600)
     .setSize(100, 25)

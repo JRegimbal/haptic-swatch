@@ -75,27 +75,32 @@ class Parameter {
 }
 
 class HapticParams {
-  public Parameter k, mu, maxA1, maxA2, freq1, freq2;
+  public Parameter k, mu, maxA1, maxA2, freq1, freq2, audFreq, audMix, audAtk, audRel, audReson;
   
   public HapticParams() {
-    k = mu = maxA1 = maxA2 = freq1 = freq2 = new Parameter(0, 0, 100);
+    k = mu = maxA1 = maxA2 = freq1 = freq2 = audFreq = audMix = audAtk = audRel = audReson = new Parameter(0, 0, 100);
   }
   
-  public HapticParams(Parameter k, Parameter mu, Parameter maxA1, Parameter maxA2, Parameter freq1, Parameter freq2) {
+  public HapticParams(Parameter k, Parameter mu, Parameter maxA1, Parameter maxA2, Parameter freq1, Parameter freq2, Parameter audFreq, Parameter audMix, Parameter audAtk, Parameter audRel, Parameter audReson) {
     this.k = k;
     this.mu = mu;
     this.maxA1 = maxA1;
     this.maxA2 = maxA2;
     this.freq1 = freq1;
     this.freq2 = freq2;
+    this.audFreq = audFreq;
+    this.audMix = audMix;
+    this.audAtk = audAtk;
+    this.audRel = audRel;
+    this.audReson = audReson;
   }
 }
 
 class HapticSwatch {
   public float radius; // m
   public Handle h;
-  public Parameter k, mu, maxA1, maxA2, freq1, freq2;
-  protected float lastK, lastMu, lastA1, lastA2, lastF1, lastF2;
+  public Parameter k, mu, maxA1, maxA2, freq1, freq2, audFreq, audMix, audAtk, audRel, audReson;
+  protected float lastK, lastMu, lastA1, lastA2, lastF1, lastF2, lastAudFreq, lastMix, lastAtk, lastRel, lastReson;
   private int id;
   public long elapsed = 0;
   
@@ -106,7 +111,7 @@ class HapticSwatch {
   boolean ready = false; // sets to true once after first init to avoid race conditions with activate actions
   
   public HapticParams getParams() {
-    return new HapticParams(k, mu, maxA1, maxA2, freq1, freq2);
+    return new HapticParams(k, mu, maxA1, maxA2, freq1, freq2, audFreq, audMix, audAtk, audRel, audReson);
   }
   
   public void setParams(HapticParams p) {
@@ -116,6 +121,11 @@ class HapticSwatch {
     maxA2 = p.maxA2;
     freq1 = p.freq1;
     freq2 = p.freq2;
+    audFreq = p.audFreq;
+    audMix = p.audMix;
+    audAtk = p.audAtk;
+    audRel = p.audRel;
+    audReson = p.audReson;
   }
   
   public HapticSwatch(float x, float y, float r) {
@@ -128,6 +138,11 @@ class HapticSwatch {
     maxA2 = new Parameter(0, minAH, MAH);
     freq1 = new Parameter(minF, minF, maxF);
     freq2 = new Parameter(minF, minF, maxF);
+    audFreq = new Parameter(minAudF, minAudF, maxAudF);
+    audMix = new Parameter(minMix, minMix, maxMix);
+    audAtk = new Parameter(minAtk, minAtk, maxAtk);
+    audRel = new Parameter(minRel, minRel, maxRel);
+    audReson = new Parameter(minReson, minReson, maxReson);
 
     reset();
     println("Init");
@@ -136,6 +151,11 @@ class HapticSwatch {
   public void reset() {
     k.value = mu.value = maxA1.value = maxA2.value = 0;
     freq1.value = freq2.value = minF;
+    audFreq.value = minAudF;
+    audMix.value = minMix;
+    audAtk.value = minAtk;
+    audRel.value = minRel;
+    audReson.value = minReson;
   }
   
   public int getId() { return id; }
@@ -160,6 +180,11 @@ class HapticSwatch {
     this.freq1.setNormVal(msg.get(4).floatValue());
     this.maxA2.setNormVal(msg.get(5).floatValue());
     this.freq2.setNormVal(msg.get(6).floatValue());
+    this.audFreq.setNormVal(msg.get(7).floatValue());
+    this.audMix.setNormVal(msg.get(8).floatValue());
+    this.audAtk.setNormVal(msg.get(9).floatValue());
+    this.audRel.setNormVal(msg.get(10).floatValue());
+    this.audReson.setNormVal(msg.get(11).floatValue());
   }
   
   public OscMessage addNormMessage(OscMessage msg) {
@@ -169,6 +194,12 @@ class HapticSwatch {
     msg = this.freq1.addNormMessage(msg);
     msg = this.maxA2.addNormMessage(msg);
     msg = this.freq2.addNormMessage(msg);
+    msg = this.audFreq.addNormMessage(msg);
+    msg = this.audMix.addNormMessage(msg);
+    msg = this.audAtk.addNormMessage(msg);
+    msg = this.audRel.addNormMessage(msg);
+    msg = this.audReson.addNormMessage(msg);
+
     return msg;
   }
   
@@ -183,7 +214,8 @@ class HapticSwatch {
   }
   
   public boolean newState() {
-    return (k.value != lastK) || (mu.value != lastMu) || (maxA1.value != lastA1) || (maxA2.value != lastA2) || (freq1.value != lastF1) || (freq2.value != lastF2);
+    return (k.value != lastK) || (mu.value != lastMu) || (maxA1.value != lastA1) || (maxA2.value != lastA2) || (freq1.value != lastF1) || (freq2.value != lastF2) ||
+      (audFreq.value != lastAudFreq) || (audMix.value != lastMix) || (audAtk.value != lastAtk) || (audRel.value != lastRel) || (audReson.value != lastReson);
   }
   
   public boolean isTouching(PVector posEE) {
@@ -198,6 +230,11 @@ class HapticSwatch {
     lastA2 = maxA2.value;
     lastF1 = freq1.value;
     lastF2 = freq2.value;
+    lastAudFreq = audFreq.value;
+    lastMix = audMix.value;
+    lastAtk = audAtk.value;
+    lastRel = audRel.value;
+    lastReson = audReson.value;
   }
   
   ArrayList<Handle> getHandles() {

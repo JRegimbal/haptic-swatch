@@ -20,11 +20,11 @@ class UpdateThread implements Runnable {
             if (!s.lastActive) { // just touched
               OscMessage msg = new OscMessage("/audio/touch");
               msg.add(s.getId());
-              msg.add(440.0);  // freq
-              msg.add(0.5);    // mix
-              msg.add(0.01);    // atk
-              msg.add(1.0);    // rel
-              msg.add(0.8);    // resonz
+              msg.add(s.audFreq.value);  // freq
+              msg.add(s.audMix.value);    // mix
+              msg.add(s.audAtk.value);    // atk
+              msg.add(s.audRel.value);    // rel
+              msg.add(s.audReson.value);    // resonz
               oscp5.send(msg, scDestination);
               s.lastActive = true;
               println("Sent message (touch)");

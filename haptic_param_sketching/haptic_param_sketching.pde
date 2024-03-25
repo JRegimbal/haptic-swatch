@@ -33,6 +33,7 @@ boolean isSwitch = false; // ignore logging when action is side effect from swit
 boolean lastMode = isManual;
 ControlP5 cp5;
 RangeSlider k, b, freq1, freq2, maxA1, maxA2;
+RangeSlider audFreq, audMix, audAtk, audRel, audReson;
 Toggle manualTog, rewardModeToggle;
 Button posPathFb, negPathFb, posZoneFb, negZoneFb;
 RadioButton modeRadio;
@@ -86,8 +87,8 @@ final NetAddress scDestination = new NetAddress("127.0.0.1", supercollider);
 OscP5 oscp5 = new OscP5(this, source);
 
 //final float maxK=500, maxB=1.0, MAL=2f, MAH=2f;
-final float maxK=150, maxB=0.5, MAL=1f, MAH=1f, maxF=200f;
-final float minK=-100, minMu=0, minAL=0f, minAH=0f, minF=10f;
+final float maxK=150, maxB=0.5, MAL=1f, MAH=1f, maxF=200f, maxAudF=880f, maxMix=1f, maxAtk=0.5, maxRel=2.0, maxReson=1.5;
+final float minK=-100, minMu=0, minAL=0f, minAH=0f, minF=10f, minAudF=110, minMix=0f, minAtk=0.01, minRel=0.1, minReson=0.25;
 
 CallbackListener knobLog = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {
@@ -276,6 +277,11 @@ void activateSwatch(HapticSwatch swatch) {
     maxA1.setParameter(null);
     freq2.setParameter(null);
     maxA2.setParameter(null);
+    audFreq.setParameter(null);
+    audMix.setParameter(null);
+    audAtk.setParameter(null);
+    audRel.setParameter(null);
+    audReson.setParameter(null);
   }
   if (activeSwatch != null) {
     k.setParameter(activeSwatch.k);
@@ -284,6 +290,11 @@ void activateSwatch(HapticSwatch swatch) {
     maxA1.setParameter(activeSwatch.maxA1);
     freq2.setParameter(activeSwatch.freq2);
     maxA2.setParameter(activeSwatch.maxA2);
+    audFreq.setParameter(activeSwatch.audFreq);
+    audMix.setParameter(activeSwatch.audMix);
+    audAtk.setParameter(activeSwatch.audAtk);
+    audRel.setParameter(activeSwatch.audRel);
+    audReson.setParameter(activeSwatch.audReson);
   }
   
   refreshRangeSliders();
