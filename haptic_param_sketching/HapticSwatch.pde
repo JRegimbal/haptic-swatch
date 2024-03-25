@@ -101,6 +101,7 @@ class HapticSwatch {
   
   static final long inactiveTime = 500000000; // 500 ms 
   public long lastForceTime = 0;
+  public boolean lastActive = false;
   public boolean requestPending = false;
   boolean ready = false; // sets to true once after first init to avoid race conditions with activate actions
   

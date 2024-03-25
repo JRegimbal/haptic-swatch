@@ -79,8 +79,10 @@ float maxSpeed = 0f;
 
 /** OSC */
 final int destination = 8080;
+final int supercollider = 57120;
 final int source = 8081;
 final NetAddress oscDestination = new NetAddress("127.0.0.1", destination);
+final NetAddress scDestination = new NetAddress("127.0.0.1", supercollider); 
 OscP5 oscp5 = new OscP5(this, source);
 
 //final float maxK=500, maxB=1.0, MAL=2f, MAH=2f;

@@ -17,7 +17,27 @@ class UpdateThread implements Runnable {
               oscp5.send(msg, oscDestination);
               // Action applied in oscEvent callback
             }
-          } /* else { println("Not Active"); } */
+            if (!s.lastActive) { // just touched
+              OscMessage msg = new OscMessage("/audio/touch");
+              msg.add(s.getId());
+              msg.add(440.0);  // freq
+              msg.add(0.5);    // mix
+              msg.add(0.01);    // atk
+              msg.add(1.0);    // rel
+              msg.add(0.8);    // resonz
+              oscp5.send(msg, scDestination);
+              s.lastActive = true;
+              println("Sent message (touch)");
+            }
+          } else if (s.lastActive) {
+            OscMessage msg = new OscMessage("/audio/release");
+            msg.add(s.getId());
+            println(scDestination);
+            oscp5.send(msg, scDestination);
+            s.lastActive = false;
+            println("Sent message (release)");
+          } 
+      /* else { println("Not Active"); } */
         } else if (rwMode == RewardMode.ATTENTION) {
           if (s.newState()) {
             // Process reward
