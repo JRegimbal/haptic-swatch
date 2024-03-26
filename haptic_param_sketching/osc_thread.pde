@@ -17,26 +17,27 @@ class UpdateThread implements Runnable {
               oscp5.send(msg, oscDestination);
               // Action applied in oscEvent callback
             }
-            if (!s.lastActive) { // just touched
-              OscMessage msg = new OscMessage("/audio/touch");
-              msg.add(s.getId());
-              msg.add(s.audFreq.value);  // freq
-              msg.add(s.audMix.value);    // mix
-              msg.add(s.audAtk.value);    // atk
-              msg.add(s.audRel.value);    // rel
-              msg.add(s.audReson.value);    // resonz
-              oscp5.send(msg, scDestination);
-              s.lastActive = true;
-              println("Sent message (touch)");
-            }
-          } else if (s.lastActive) {
+          }
+          if (s.isActiveAudio() && !s.lastActive) {
+            OscMessage msg = new OscMessage("/audio/touch");
+            msg.add(s.getId());
+            msg.add(s.audFreq.value);  // freq
+            msg.add(s.audMix.value);    // mix
+            msg.add(s.audAtk.value);    // atk
+            msg.add(s.audRel.value);    // rel
+            msg.add(s.audReson.value);    // resonz
+            oscp5.send(msg, scDestination);
+            s.lastActive = true;
+            println("Sent message (touch)");
+          }
+          else if (!s.isActiveAudio() && s.lastActive) {
             OscMessage msg = new OscMessage("/audio/release");
             msg.add(s.getId());
             println(scDestination);
             oscp5.send(msg, scDestination);
             s.lastActive = false;
             println("Sent message (release)");
-          } 
+          }
       /* else { println("Not Active"); } */
         } else if (rwMode == RewardMode.ATTENTION) {
           if (s.newState()) {

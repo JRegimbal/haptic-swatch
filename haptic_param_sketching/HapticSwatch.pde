@@ -104,7 +104,8 @@ class HapticSwatch {
   private int id;
   public long elapsed = 0;
   
-  static final long inactiveTime = 500000000; // 500 ms 
+  static final long inactiveTime = 500000000; // 500 ms
+  static final long inactiveTimeAudio = 50000000; // 50 ms
   public long lastForceTime = 0;
   public boolean lastActive = false;
   public boolean requestPending = false;
@@ -170,7 +171,12 @@ class HapticSwatch {
       maxA1.normVal() + "," + maxA1.normLow() + "," + maxA1.normHigh() + "," +
       freq1.normVal() + "," + freq1.normLow() + "," + freq1.normHigh() + "," +
       maxA2.normVal() + "," + maxA2.normLow() + "," + maxA2.normHigh() + "," +
-      freq2.normVal() + "," + freq2.normLow() + "," + freq2.normHigh() + "]";
+      freq2.normVal() + "," + freq2.normLow() + "," + freq2.normHigh() + "," + 
+      audFreq.normVal() + "," + audFreq.normLow() + "," + audFreq.normHigh() + "," +
+      audMix.normVal() + "," + audMix.normLow() + "," + audMix.normHigh() + "," +
+      audAtk.normVal() + "," + audAtk.normLow() + "," + audAtk.normHigh() + "," +
+      audRel.normVal() + "," + audRel.normLow() + "," + audRel.normHigh() + "," +
+      audReson.normVal() + "," + audReson.normLow() + "," + audReson.normHigh() +"]";
   }
   
   public void processOscSet(OscMessage msg) {
@@ -211,6 +217,10 @@ class HapticSwatch {
   
   public boolean isActive() {
     return (System.nanoTime() - lastForceTime < inactiveTime);
+  }
+  
+  public boolean isActiveAudio() {
+    return (System.nanoTime() - lastForceTime < inactiveTimeAudio);
   }
   
   public boolean newState() {

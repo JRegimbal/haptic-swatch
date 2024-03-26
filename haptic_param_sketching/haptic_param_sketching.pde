@@ -149,6 +149,31 @@ CallbackListener CL = new CallbackListener() {
             id = 5;
             val = activeSwatch.freq2.parameterEnable;
             label = "F2";
+          } else if (c.equals(audFreq.rangeToggle)) {
+            println("checkAF");
+            id = 6;
+            val = activeSwatch.audFreq.parameterEnable;
+            label = "AF";
+          } else if (c.equals(audMix.rangeToggle)) {
+            println("checkMx");
+            id = 7;
+            val = activeSwatch.audMix.parameterEnable;
+            label = "Mx";
+          } else if (c.equals(audAtk.rangeToggle)) {
+            println("checkAtk");
+            id = 8;
+            val = activeSwatch.audAtk.parameterEnable;
+            label = "Ak";
+          } else if (c.equals(audRel.rangeToggle)) {
+            println("checkRl");
+            id = 9;
+            val = activeSwatch.audRel.parameterEnable;
+            label = "Rl";
+          } else if (c.equals(audReson.rangeToggle)) {
+            println("checkRn");
+            id = 10;
+            val = activeSwatch.audReson.parameterEnable;
+            label = "Rn";
           } else {
             println("ERR - unknown controller");
             return;
@@ -226,7 +251,7 @@ void mousePressed(MouseEvent event) {
       swatches.put(s.getId(), s);
       OscMessage msg = new OscMessage("/controller/init");
       msg.add(s.getId());
-      msg.add(6);
+      msg.add(11);
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
       synchronized(log) {
@@ -419,6 +444,11 @@ void refreshRangeSliders() {
       freq1.setValue(activeSwatch.freq1);
       maxA2.setValue(activeSwatch.maxA2);
       freq2.setValue(activeSwatch.freq2);
+      audFreq.setValue(activeSwatch.audFreq);
+      audMix.setValue(activeSwatch.audMix);
+      audAtk.setValue(activeSwatch.audAtk);
+      audRel.setValue(activeSwatch.audRel);
+      audReson.setValue(activeSwatch.audReson);
       isSwitch = false;
     }
   }
