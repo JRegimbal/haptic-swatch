@@ -108,8 +108,10 @@ class HapticSwatch {
   static final long inactiveTimeAudio = 50000000; // 50 ms
   public long lastForceTime = 0;
   public boolean lastActive = false;
+  public boolean audioActive = false;
   public boolean requestPending = false;
   boolean ready = false; // sets to true once after first init to avoid race conditions with activate actions
+  public PVector lastForce = new PVector(0, 0);
   
   public HapticParams getParams() {
     return new HapticParams(k, mu, maxA1, maxA2, freq1, freq2, audFreq, audMix, audAtk, audRel, audReson);
@@ -290,6 +292,7 @@ class HapticSwatch {
     } else {
       // NOOP
     }
+    lastForce.set(forceTmp);
     return forceTmp;
   }
 }

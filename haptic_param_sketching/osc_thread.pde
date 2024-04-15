@@ -18,7 +18,10 @@ class UpdateThread implements Runnable {
               // Action applied in oscEvent callback
             }
           }
-          if (s.isActiveAudio() && !s.lastActive) {
+          if (!s.audioActive && s.lastForce.mag() != 0) {
+            s.audioActive = true;
+          }
+          if (s.audioActive) {
             OscMessage msg = new OscMessage("/audio/touch");
             msg.add(s.getId());
             msg.add(s.audFreq.value);  // freq
@@ -26,17 +29,11 @@ class UpdateThread implements Runnable {
             msg.add(s.audAtk.value);    // atk
             msg.add(s.audRel.value);    // rel
             msg.add(s.audReson.value);    // resonz
+            msg.add(s.lastForce.mag()); // force N
             oscp5.send(msg, scDestination);
-            s.lastActive = true;
-            println("Sent message (touch)");
-          }
-          else if (!s.isActiveAudio() && s.lastActive) {
-            OscMessage msg = new OscMessage("/audio/release");
-            msg.add(s.getId());
-            println(scDestination);
-            oscp5.send(msg, scDestination);
-            s.lastActive = false;
-            println("Sent message (release)");
+            if (s.lastForce.mag() == 0) {
+              s.audioActive = false;
+            }
           }
       /* else { println("Not Active"); } */
         } else if (rwMode == RewardMode.ATTENTION) {

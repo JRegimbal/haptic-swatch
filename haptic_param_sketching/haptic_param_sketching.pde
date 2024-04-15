@@ -254,6 +254,15 @@ void mousePressed(MouseEvent event) {
       msg.add(11);
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
+      msg = new OscMessage("/audio/create");
+      msg.add(s.getId());
+      msg.add(s.audFreq.value);  // freq
+      msg.add(s.audMix.value);    // mix
+      msg.add(s.audAtk.value);    // atk
+      msg.add(s.audRel.value);    // rel
+      msg.add(s.audReson.value);    // resonz
+      msg.add(s.lastForce.mag()); // force N
+      oscp5.send(msg, scDestination);
       synchronized(log) {
         TableRow row = log.addRow();
         row.setString("timestamp", OffsetDateTime.now().toString());
