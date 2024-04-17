@@ -40,6 +40,7 @@ RadioButton modeRadio;
 HapticParams clipboard = new HapticParams();
 Button copyButton, pasteButton;
 final float nsteps = 20f;
+final int fbScale = 10;
 long currTime, lastTime = 0;
 
 /** 2DIY setup */
@@ -505,9 +506,9 @@ void processPathFb(int value) {
         id = activeSwatch.getId();
         msg.add(id);
         if (value == 1) {
-          feedback = 1;
+          feedback = fbScale;
         } else {
-          feedback = -1;
+          feedback = -fbScale;
         }
         msg.add(feedback);
         oscp5.send(msg, oscDestination);
@@ -534,9 +535,9 @@ void processZoneFb(int value) {
         id = activeSwatch.getId();
         msg.add(id);
         if (value == 1) {
-          feedback = 1;
+          feedback = fbScale;
         } else {
-          feedback = -1;
+          feedback = -fbScale;
         }
         msg.add(feedback);
         oscp5.send(msg, oscDestination);
