@@ -9,16 +9,6 @@ SynthDef(\whatever, {|bus = 0, freq = 440, mix = 0.5, atk = 3, set = 0, rel = 3,
 )
 
 (
-{
-a = Synth.new(\whatever, [\mix, 0.6, \freq, 220, \rel, 5]);
-0.3.wait;
-a.set(\gate, 0);
-}.fork();
-)
-(
-a.set(\gate, 0);
-)
-(
 ~synthDict = Dictionary();
 ~processRelease = {|index|
 	if(~synthDict.includesKey(index),
