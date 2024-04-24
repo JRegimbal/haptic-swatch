@@ -277,6 +277,11 @@ void draw() {
       maxA2.setAutoLock(!isManual);
       freq1.setAutoLock(!isManual);
       freq2.setAutoLock(!isManual);
+      audFreq.setAutoLock(!isManual);
+      audMix.setAutoLock(!isManual);
+      audAtk.setAutoLock(!isManual);
+      audRel.setAutoLock(!isManual);
+      audReson.setAutoLock(!isManual);
       OscMessage msg = new OscMessage("/uistate/setAutonomous");
       msg.add(isManual);
       println("Trig");

@@ -40,7 +40,7 @@ RadioButton modeRadio;
 HapticParams clipboard = new HapticParams();
 Button copyButton, pasteButton;
 final float nsteps = 20f;
-final int fbScale = 10;
+final int fbScale = 1;
 long currTime, lastTime = 0;
 
 /** 2DIY setup */
