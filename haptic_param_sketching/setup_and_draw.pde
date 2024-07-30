@@ -101,41 +101,42 @@ void setup() {
   audReson.slider.onChange(knobLog);
   audReson.rangeToggle.onChange(CL);
   
-  
-  manualTog = cp5.addToggle("isManual")
-    .setPosition(75, 600)
-    .setSize(100, 25)
-    .setCaptionLabel("Manual/Autonomous Toggle (Z)")
-    .setFont(font)
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setMode(ControlP5.SWITCH)
-    .onChange(modeLog);
-    
-  posPathFb = cp5.addButton("processPosPathFb")
-    .setPosition(50, 450)
-    .setSize(100,50)
-    .setValue(1)
-    .setFont(font)
-    .setLabel("Like this\npath (Q)");  
-  negPathFb = cp5.addButton("processNegPathFb")
-    .setPosition(50, 510)
-    .setSize(100, 50)
-    .setValue(0)
-    .setFont(font)
-    .setLabel("Dislike this\npath (A)");
-    
-  posZoneFb = cp5.addButton("processPosZoneFb")
-    .setPosition(200, 450)
-    .setSize(100, 50)
-    .setValue(1)
-    .setFont(font)
-    .setLabel("Like this\nzone (W)");
-  negPathFb = cp5.addButton("processNegZoneFb")
-    .setPosition(200, 510)
-    .setSize(100, 50)
-    .setValue(0)
-    .setFont(font)
-    .setLabel("Dislike this\nzone (S)");
+  if (useAgent) {
+    manualTog = cp5.addToggle("isManual")
+      .setPosition(75, 600)
+      .setSize(100, 25)
+      .setCaptionLabel("Manual/Autonomous Toggle (Z)")
+      .setFont(font)
+      .setColorCaptionLabel(color(20, 20, 20))
+      .setMode(ControlP5.SWITCH)
+      .onChange(modeLog);
+      
+    posPathFb = cp5.addButton("processPosPathFb")
+      .setPosition(50, 450)
+      .setSize(100,50)
+      .setValue(1)
+      .setFont(font)
+      .setLabel("Like this\npath (Q)");  
+    negPathFb = cp5.addButton("processNegPathFb")
+      .setPosition(50, 510)
+      .setSize(100, 50)
+      .setValue(0)
+      .setFont(font)
+      .setLabel("Dislike this\npath (A)");
+      
+    posZoneFb = cp5.addButton("processPosZoneFb")
+      .setPosition(200, 450)
+      .setSize(100, 50)
+      .setValue(1)
+      .setFont(font)
+      .setLabel("Like this\nzone (W)");
+    negPathFb = cp5.addButton("processNegZoneFb")
+      .setPosition(200, 510)
+      .setSize(100, 50)
+      .setValue(0)
+      .setFont(font)
+      .setLabel("Dislike this\nzone (S)");
+  }
     
   /*rewardModeToggle = cp5.addToggle("rewardMode")
     .setPosition(75, 575)

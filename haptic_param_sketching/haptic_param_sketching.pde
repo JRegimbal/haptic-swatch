@@ -27,6 +27,9 @@ public enum RewardMode {
 
 InputMode mode = InputMode.SELECT;
 final HaplyVersion version = HaplyVersion.V3_1;
+final float nsteps = 20f;
+final int fbScale = 1;
+final boolean useAgent = true;
 RewardMode rwMode = RewardMode.EXPLICIT;
 boolean isManual = true;
 boolean isSwitch = false; // ignore logging when action is side effect from switching active swatch
@@ -39,8 +42,6 @@ Button posPathFb, negPathFb, posZoneFb, negZoneFb;
 RadioButton modeRadio;
 HapticParams clipboard = new HapticParams();
 Button copyButton, pasteButton;
-final float nsteps = 20f;
-final int fbScale = 1;
 long currTime, lastTime = 0;
 
 /** 2DIY setup */
@@ -362,14 +363,20 @@ void keyPressed() {
     if (!tmp.getBooleanValue()) tmp.toggle();
   }
   else if (key == 'q' || key == 'Q' || key == 'a' || key == 'A') {
-    processPathFb((key == 'q' || key == 'Q') ? 1 : 0);
+    if (useAgent) {
+      processPathFb((key == 'q' || key == 'Q') ? 1 : 0);
+    }
   }
   else if (key == 'w' || key =='W' || key == 's' || key == 'S') {
-    processZoneFb((key == 'w' || key == 'W') ? 1 : 0);
+    if (useAgent) {
+      processZoneFb((key == 'w' || key == 'W') ? 1 : 0);
+    }
   }
   else if (key == 'z' || key == 'Z') {
     // Switch mode
-    manualTog.toggle(); 
+    if (useAgent) {
+      manualTog.toggle();
+    }
   }
   else if (key == 'x' || key == 'X') {
     // switch reward
