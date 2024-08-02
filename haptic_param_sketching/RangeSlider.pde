@@ -81,6 +81,7 @@ class RangeSlider {
     slider.setRange(min, max);
     range.setRange(min, max);
     range.setRangeValues(min, max);
+    this.diff = (max - min) / 50f;
     return this;
   }
   
@@ -115,10 +116,14 @@ class RangeSlider {
   }
   
   public void setValue(Parameter p) {
-    slider.setValue(p.value);
+    slider.setBroadcast(false)
+      .setValue(p.value)
+      .setBroadcast(true);
     range.setBroadcast(false)
       .setLowValue(p.low)
+      .update()
       .setHighValue(p.high)
+      .update()
       .setBroadcast(true);
     if (p.parameterEnable != rangeToggle.getBooleanValue()) {
       rangeToggle.setValue(p.parameterEnable);

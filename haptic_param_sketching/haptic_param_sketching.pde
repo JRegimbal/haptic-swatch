@@ -118,6 +118,10 @@ CallbackListener limitLog = new CallbackListener() {
       row.setInt("element", activeSwatch.getId());
       row.setString("primary", activeSwatch.valueString());
       row.setString("secondary", "user");
+      OscMessage msg = new OscMessage("/controller/updateManual");
+      msg.add(activeSwatch.getId());
+      msg = activeSwatch.addNormMessage(msg);
+      oscp5.send(msg, oscDestination);
     }
   }
 };
@@ -406,7 +410,7 @@ void keyPressed() {
         id = activeSwatch.getId();
         OscMessage msg = new OscMessage("/controller/init");
         msg.add(id);
-        msg.add(6);
+        msg.add(11);
         msg.add(1f / nsteps);
         oscp5.send(msg, oscDestination);
         activeSwatch.reset();
@@ -452,7 +456,7 @@ void resetAgents() {
       id = s.getId();
       OscMessage msg = new OscMessage("/controller/init");
       msg.add(id);
-      msg.add(6);
+      msg.add(11);
       msg.add(1f / nsteps);
       oscp5.send(msg, oscDestination);
       s.reset();

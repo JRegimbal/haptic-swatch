@@ -159,6 +159,18 @@ class HapticSwatch {
     audAtk.value = minAtk;
     audRel.value = minRel;
     audReson.value = minReson;
+
+    k.low = k.min; k.high = k.max;
+    mu.low = mu.min; mu.high = mu.max;
+    freq1.low = freq1.min; freq1.high = freq1.max;
+    maxA1.low = maxA1.min; maxA1.high = maxA1.max;
+    freq2.low = freq2.min; freq2.high = freq2.max;
+    maxA2.low = maxA2.min; maxA2.high = maxA2.max;
+    audFreq.low = audFreq.min; audFreq.high = audFreq.max;
+    audMix.low = audMix.min; audMix.high = audMix.max;
+    audAtk.low = audAtk.min; audAtk.high = audAtk.max;
+    audRel.low = audRel.min; audRel.high = audRel.max;
+    audReson.low = audReson.min; audReson.high = audReson.max;
   }
   
   public int getId() { return id; }
