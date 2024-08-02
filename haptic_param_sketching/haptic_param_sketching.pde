@@ -591,7 +591,7 @@ void pasteToActive() {
   println("Pong");
   if (activeSwatch != null) {
     synchronized(activeSwatch) {
-      activeSwatch.setParams(clipboard);
+      activeSwatch.setParams(new HapticParams(clipboard));
       refreshRangeSliders();
     }
   }

@@ -35,6 +35,15 @@ class Parameter {
   float value, min, max, low, high;
   boolean parameterEnable;
   
+  public Parameter (Parameter p) {
+    this.value = p.value;
+    this.min = p.min;
+    this.max = p.max;
+    this.low = p.low;
+    this.high = p.high;
+    this.parameterEnable = p.parameterEnable;
+  }
+  
   public Parameter (float value, float min, float max) {
     this.value = value;
     this.min = this.low = min;
@@ -82,17 +91,21 @@ class HapticParams {
   }
   
   public HapticParams(Parameter k, Parameter mu, Parameter maxA1, Parameter maxA2, Parameter freq1, Parameter freq2, Parameter audFreq, Parameter audMix, Parameter audAtk, Parameter audRel, Parameter audReson) {
-    this.k = k;
-    this.mu = mu;
-    this.maxA1 = maxA1;
-    this.maxA2 = maxA2;
-    this.freq1 = freq1;
-    this.freq2 = freq2;
-    this.audFreq = audFreq;
-    this.audMix = audMix;
-    this.audAtk = audAtk;
-    this.audRel = audRel;
-    this.audReson = audReson;
+    this.k = new Parameter(k);
+    this.mu = new Parameter(mu);
+    this.maxA1 = new Parameter(maxA1);
+    this.maxA2 = new Parameter(maxA2);
+    this.freq1 = new Parameter(freq1);
+    this.freq2 = new Parameter(freq2);
+    this.audFreq = new Parameter(audFreq);
+    this.audMix = new Parameter(audMix);
+    this.audAtk = new Parameter(audAtk);
+    this.audRel = new Parameter(audRel);
+    this.audReson = new Parameter(audReson);
+  }
+  
+  public HapticParams(HapticParams p) {
+    this(p.k, p.mu, p.maxA1, p.maxA2, p.freq1, p.freq2, p.audFreq, p.audMix, p.audAtk, p.audRel, p.audReson);
   }
 }
 
@@ -103,7 +116,7 @@ class HapticSwatch {
   protected float lastK, lastMu, lastA1, lastA2, lastF1, lastF2, lastAudFreq, lastMix, lastAtk, lastRel, lastReson;
   private int id;
   public long elapsed = 0;
-  
+
   static final long inactiveTime = 500000000; // 500 ms
   static final long inactiveTimeAudio = 50000000; // 50 ms
   public long lastForceTime = 0;
@@ -112,7 +125,7 @@ class HapticSwatch {
   public boolean requestPending = false;
   boolean ready = false; // sets to true once after first init to avoid race conditions with activate actions
   public PVector lastForce = new PVector(0, 0);
-  
+
   public HapticParams getParams() {
     return new HapticParams(k, mu, maxA1, maxA2, freq1, freq2, audFreq, audMix, audAtk, audRel, audReson);
   }
