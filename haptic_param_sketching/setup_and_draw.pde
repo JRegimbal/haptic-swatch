@@ -29,6 +29,7 @@ void setup() {
     //.setFont(font)
     ;
   k.slider.onChange(knobLog);
+  k.range.onChange(limitLog);
   k.rangeToggle.onChange(CL);
   b = new RangeSlider("mu", cp5, 250, 25, 100)
     .setRange(minMu, maxB)
@@ -37,6 +38,7 @@ void setup() {
     //.onChange(knobLog)
     ;
   b.slider.onChange(knobLog);
+  b.range.onChange(limitLog);
   b.rangeToggle.onChange(CL);
   maxA1 = new RangeSlider("maxA1", cp5, 50, 100, 100)
     .setRange(minAL, MAL)
@@ -45,6 +47,7 @@ void setup() {
     //.onChange(knobLog)
     ;
   maxA1.slider.onChange(knobLog);
+  maxA1.range.onChange(limitLog);;
   maxA1.rangeToggle.onChange(CL);
   freq1 = new RangeSlider("freq1", cp5, 250, 100, 100)
     .setRange(minF, maxF)
@@ -53,6 +56,7 @@ void setup() {
     //.onChange(knobLog)
     ;
   freq1.slider.onChange(knobLog);
+  freq1.range.onChange(limitLog);
   freq1.rangeToggle.onChange(CL);
   maxA2 = new RangeSlider("maxA2", cp5, 50, 175, 100)
     .setRange(minAH, MAH)
@@ -61,6 +65,7 @@ void setup() {
     //.onChange(knobLog)
     ;
   maxA2.slider.onChange(knobLog);
+  maxA2.range.onChange(limitLog);
   maxA2.rangeToggle.onChange(CL);
   freq2 = new RangeSlider("freq2", cp5, 250, 175, 100)
     .setRange(minF, maxF)
@@ -69,36 +74,42 @@ void setup() {
     //.onChange(knobLog)
     ;
   freq2.slider.onChange(knobLog);
+  freq2.range.onChange(limitLog);
   freq2.rangeToggle.onChange(CL);
   audFreq = new RangeSlider("audFreq", cp5, 50, 250, 100)
     .setRange(minAudF, maxAudF) // A2 to A5
     .setCaptionLabel("Frequency (Hz)")
     ;
   audFreq.slider.onChange(knobLog);
+  audFreq.range.onChange(limitLog);
   audFreq.rangeToggle.onChange(CL);
   audMix = new RangeSlider("audMix", cp5, 250, 250, 100)
     .setRange(minMix, maxMix)
     .setCaptionLabel("Noise Mix")
     ;
   audMix.slider.onChange(knobLog);
+  audMix.range.onChange(limitLog);
   audMix.rangeToggle.onChange(CL);
   audAtk = new RangeSlider("audAtk", cp5, 50, 325, 100)
     .setRange(minAtk, maxAtk)
     .setCaptionLabel("Attack (s)")
     ;
   audAtk.slider.onChange(knobLog);
+  audAtk.range.onChange(limitLog);
   audAtk.rangeToggle.onChange(CL);
   audRel = new RangeSlider("audRel", cp5, 250, 325, 100)
     .setRange(minRel, maxRel)
     .setCaptionLabel("Release (s)")
     ;
   audRel.slider.onChange(knobLog);
+  audRel.range.onChange(limitLog);
   audRel.rangeToggle.onChange(CL);
   audReson = new RangeSlider("audReson", cp5, 50, 400, 100)
     .setRange(minReson, maxReson)
     .setCaptionLabel("Resonance")
     ;
   audReson.slider.onChange(knobLog);
+  audReson.range.onChange(limitLog);
   audReson.rangeToggle.onChange(CL);
   
   if (useAgent) {

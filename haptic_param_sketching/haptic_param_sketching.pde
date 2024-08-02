@@ -109,6 +109,19 @@ CallbackListener knobLog = new CallbackListener() {
   }
 };
 
+CallbackListener limitLog = new CallbackListener() {
+  public void controlEvent(CallbackEvent evt) {
+    if (activeSwatch != null && isManual && !isSwitch) {
+      TableRow row = log.addRow();
+      row.setString("timestamp", OffsetDateTime.now().toString());
+      row.setString("command", "modify_limit");
+      row.setInt("element", activeSwatch.getId());
+      row.setString("primary", activeSwatch.valueString());
+      row.setString("secondary", "user");
+    }
+  }
+};
+
 // Switching to new selected swatch
 CallbackListener CL = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {
