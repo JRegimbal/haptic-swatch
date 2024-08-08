@@ -9,6 +9,12 @@ import oscP5.*;
 
 private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 
+public enum Mode {
+  Manual,
+  Joint,
+  Split
+}
+
 public enum HaplyVersion {
   V2,
   V3,
@@ -26,10 +32,10 @@ public enum RewardMode {
 }
 
 InputMode mode = InputMode.SELECT;
+Mode toolMode = Mode.Split;
 final HaplyVersion version = HaplyVersion.V3_1;
 final float nsteps = 20f;
 final int fbScale = 1;
-final boolean useAgent = true;
 RewardMode rwMode = RewardMode.EXPLICIT;
 boolean isManual = true;
 boolean isSwitch = false; // ignore logging when action is side effect from switching active swatch
@@ -380,18 +386,20 @@ void keyPressed() {
     if (!tmp.getBooleanValue()) tmp.toggle();
   }
   else if (key == 'q' || key == 'Q' || key == 'a' || key == 'A') {
-    if (useAgent) {
-      processPathFb((key == 'q' || key == 'Q') ? 1 : 0);
+    if (toolMode == Mode.Joint) {
+      processFb((key == 'q' || key == 'Q') ? 1 : 0, 0);
+    } else if (toolMode == Mode.Split) {
+      processFb((key == 'q' || key == 'Q') ? 1 : 0, 1);
     }
   }
   else if (key == 'w' || key =='W' || key == 's' || key == 'S') {
-    if (useAgent) {
-      processZoneFb((key == 'w' || key == 'W') ? 1 : 0);
+    if (toolMode == Mode.Split) {
+      processFb((key == 'w' || key == 'W') ? 1 : 0, 2);
     }
   }
   else if (key == 'z' || key == 'Z') {
     // Switch mode
-    if (useAgent) {
+    if (toolMode != Mode.Manual) {
       manualTog.toggle();
     }
   }
@@ -515,17 +523,15 @@ PVector graphics_to_device(PVector graphicsFrame) {
   return graphicsFrame.set(-graphicsFrame.x, graphicsFrame.y);
 }
 
-void processPosPathFb() { processPathFb(1); }
-void processNegPathFb() { processPathFb(0); }
-void processPosZoneFb() { processZoneFb(1); }
-void processNegZoneFb() { processZoneFb(0); }
+void processPosPrimFb() { processFb(1, (toolMode == Mode.Joint) ? 0 : 1); }
+void processNegPrimFb() { processFb(0, (toolMode == Mode.Joint) ? 0 : 1); }
+void processPosSecFb() { processFb(1, 2); }
+void processNegSecFb() { processFb(0, 2); }
 
-void processPathFb(int value) {
-  // POSITIVE/NEGATIVE REWARD
-  if (rwMode == RewardMode.EXPLICIT) {
-    if (activeSwatch != null) {
-      int id, feedback;
-      synchronized(activeSwatch) {
+void processFb(int value, int modality) {
+  if (activeSwatch != null) {
+     int id, feedback;
+     synchronized(activeSwatch) {
         OscMessage msg = new OscMessage("/controller/reward");
         id = activeSwatch.getId();
         msg.add(id);
@@ -535,46 +541,18 @@ void processPathFb(int value) {
           feedback = -fbScale;
         }
         msg.add(feedback);
-        oscp5.send(msg, oscDestination);
-      }
-      TableRow row = log.addRow();
-      row.setString("timestamp", OffsetDateTime.now().toString());
-      row.setString("command", "guide");
-      row.setInt("element", id);
-      row.setInt("primary", feedback);
-      println("Reward sent");
-    }
-  } else {
-    println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
-  }
-}
-
-void processZoneFb(int value) {
-// POSITIVE/NEGATIVE ZONE REWARD
-  if (rwMode == RewardMode.EXPLICIT) {
-    if (activeSwatch != null) {
-      int id, feedback;
-      synchronized(activeSwatch) {
-        OscMessage msg = new OscMessage("/controller/zone_reward");
-        id = activeSwatch.getId();
-        msg.add(id);
-        if (value == 1) {
-          feedback = fbScale;
-        } else {
-          feedback = -fbScale;
+        if (modality > 0) {
+          msg.add(modality);
         }
-        msg.add(feedback);
+        msg.print();
         oscp5.send(msg, oscDestination);
-      }
-      TableRow row = log.addRow();
-      row.setString("timestamp", OffsetDateTime.now().toString());
-      row.setString("command", "zone");
-      row.setInt("element", id);
-      row.setInt("primary", feedback);
-      println("Zone reward sent");
     }
-  } else {
-    println("ERROR: Explicit reward mode not enabled. Actual reward mode: " + rwMode);
+    TableRow row = log.addRow();
+    row.setString("timestamp", OffsetDateTime.now().toString());
+    row.setString("command", (modality > 0) ? "guide_" + modality : "guide" );
+    row.setInt("element", id);
+    row.setInt("primary", feedback);
+    println("Reward sent");
   }
 }
 

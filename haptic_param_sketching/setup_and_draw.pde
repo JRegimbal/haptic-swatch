@@ -117,7 +117,7 @@ void setup() {
   audReson.range.onChange(limitLog);
   audReson.rangeToggle.onChange(CL);
   
-  if (useAgent) {
+  if (toolMode == Mode.Joint || toolMode == Mode.Split) {
     manualTog = cp5.addToggle("isManual")
       .setPosition(75, 600)
       .setSize(100, 25)
@@ -127,54 +127,34 @@ void setup() {
       .setMode(ControlP5.SWITCH)
       .onChange(modeLog);
       
-    posPathFb = cp5.addButton("processPosPathFb")
-      .setPosition(50, 450)
+    posPathFb = cp5.addButton("processPosPrimFb")
+      .setPosition(50, 475)
       .setSize(100,50)
       .setValue(1)
       .setFont(font)
-      .setLabel("Like this\npath (Q)");  
-    negPathFb = cp5.addButton("processNegPathFb")
-      .setPosition(50, 510)
+      .setLabel("Like " + ((toolMode == Mode.Joint) ? "this" : "haptic") + "\n(Q)");  
+    negPathFb = cp5.addButton("processNegPrimFb")
+      .setPosition(50, 535)
       .setSize(100, 50)
       .setValue(0)
       .setFont(font)
-      .setLabel("Dislike this\npath (A)");
+      .setLabel("Dislike " + ((toolMode == Mode.Joint) ? "this" : "haptic") + "\n(A)");
       
-    posZoneFb = cp5.addButton("processPosZoneFb")
-      .setPosition(200, 450)
-      .setSize(100, 50)
-      .setValue(1)
-      .setFont(font)
-      .setLabel("Like this\nzone (W)");
-    negPathFb = cp5.addButton("processNegZoneFb")
-      .setPosition(200, 510)
-      .setSize(100, 50)
-      .setValue(0)
-      .setFont(font)
-      .setLabel("Dislike this\nzone (S)");
+    if (toolMode == Mode.Split) {
+      posZoneFb = cp5.addButton("processPosSecFb")
+        .setPosition(200, 475)
+        .setSize(100, 50)
+        .setValue(1)
+        .setFont(font)
+        .setLabel("Like audio\n(W)");
+      negPathFb = cp5.addButton("processNegSecFb")
+        .setPosition(200, 535)
+        .setSize(100, 50)
+        .setValue(0)
+        .setFont(font)
+        .setLabel("Dislike audio\n(S)");
+    }
   }
-    
-  /*rewardModeToggle = cp5.addToggle("rewardMode")
-    .setPosition(75, 575)
-    .setValue(false)
-    .setCaptionLabel("Attention/Explicit")
-    .setColorCaptionLabel(color(20, 20, 20))
-    .setMode(ControlP5.SWITCH)
-    .onChange(new CallbackListener() {
-      public void controlEvent(CallbackEvent evt) {
-        Controller c = evt.getController();
-        if (c.equals(rewardModeToggle)) {
-          if (rwMode == RewardMode.EXPLICIT) {
-            rwMode = RewardMode.ATTENTION;
-          } else if (rwMode == RewardMode.ATTENTION) {
-            rwMode = RewardMode.EXPLICIT;
-          } else {
-            println("ERROR: Unexpected reward mode state: " + rwMode);
-          }
-          println(rwMode);
-        }
-      }
-    });*/
     
   modeRadio = cp5.addRadioButton("mode")
     .setPosition(1205, 125)
