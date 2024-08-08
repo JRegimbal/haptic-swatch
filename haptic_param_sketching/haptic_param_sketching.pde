@@ -68,7 +68,7 @@ PVector velEE = new PVector(0, 0);
 PVector fEE = new PVector(0, 0);
 
 final float targetRate = 1000f;
-final long controlElapsedMs = 100;
+final long controlElapsedMs = 200;
 final float textureConst = 2*PI/targetRate;
 
 /** Params */
