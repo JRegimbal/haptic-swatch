@@ -36,8 +36,8 @@ SynthDef(\whatever, {|bus = 0, freq = 440, mix = 0.5, atk = 3, set = 0, rel = 3,
 	set.postln;
 	~synthDict.at(index).set(\mix, mix, \freq, freq, \rel, release, \atk, atk, \resonz, res, \set, set);
 };
-)
-(
+//)
+//(
 ~osc1 = OSCFunc.new({|msg, time, addr, recvPort|
 	var index = msg.at(1).asInteger;
 	msg.postln;
@@ -49,13 +49,6 @@ SynthDef(\whatever, {|bus = 0, freq = 440, mix = 0.5, atk = 3, set = 0, rel = 3,
 	~processCreate.(index, msg.at(2).asFloat, msg.at(3).asFloat, msg.at(4).asFloat, msg.at(5).asFloat, msg.at(6).asFloat, msg.at(7).asFloat);
 }, "/audio/create");
 )
-//(
-//~osc2 = OSCFunc.new({|msg, time, addr, recvPort|
-//	var index = msg.at(1).asInteger;
-//	msg.postln;
-//	~processRelease.(index);
-//}, "/audio/release");
-//)
 (~osc1.free; ~osc2.free;)
 OSCFunc.trace(true);
 s.boot;
