@@ -9,7 +9,7 @@ float             l                                   = 0.07;
 float             L                                   = 0.09;
 
 /* device graphical position */
-PVector           deviceOrigin                        = new PVector(0, 0);
+PVector           deviceOrigin                        = new PVector(75, 0);
 
 /* end effector radius in meters */
 //float             rEE                                 = 0.006;

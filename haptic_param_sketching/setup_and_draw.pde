@@ -26,7 +26,7 @@ void setup() {
     .setRange(minK, maxK)
     .setCaptionLabel("Spring k")
     //.onChange(knobLog)
-    //.setFont(font)
+    .setFont(font)
     ;
   k.slider.onChange(knobLog);
   k.range.onChange(limitLog);
@@ -34,7 +34,7 @@ void setup() {
   b = new RangeSlider("mu", cp5, 250, 25, 100)
     .setRange(minMu, maxB)
     .setCaptionLabel("Friction mu")
-    //.setFont(font)
+    .setFont(font)
     //.onChange(knobLog)
     ;
   b.slider.onChange(knobLog);
@@ -43,7 +43,7 @@ void setup() {
   maxA1 = new RangeSlider("maxA1", cp5, 50, 100, 100)
     .setRange(minAL, MAL)
     .setCaptionLabel("Max Vib. 1 (N)")
-    //.setFont(font)
+    .setFont(font)
     //.onChange(knobLog)
     ;
   maxA1.slider.onChange(knobLog);
@@ -52,7 +52,7 @@ void setup() {
   freq1 = new RangeSlider("freq1", cp5, 250, 100, 100)
     .setRange(minF, maxF)
     .setCaptionLabel("Vib. Freq. 1 (Hz)")
-    //.setFont(font)
+    .setFont(font)
     //.onChange(knobLog)
     ;
   freq1.slider.onChange(knobLog);
@@ -61,7 +61,7 @@ void setup() {
   maxA2 = new RangeSlider("maxA2", cp5, 50, 175, 100)
     .setRange(minAH, MAH)
     .setCaptionLabel("Max Vib. 2 (N)")
-    //.setFont(font)
+    .setFont(font)
     //.onChange(knobLog)
     ;
   maxA2.slider.onChange(knobLog);
@@ -70,7 +70,7 @@ void setup() {
   freq2 = new RangeSlider("freq2", cp5, 250, 175, 100)
     .setRange(minF, maxF)
     .setCaptionLabel("Vib. Freq. 2 (Hz)")
-    //.setFont(font)
+    .setFont(font)
     //.onChange(knobLog)
     ;
   freq2.slider.onChange(knobLog);
@@ -79,6 +79,7 @@ void setup() {
   audFreq = new RangeSlider("audFreq", cp5, 50, 250, 100)
     .setRange(minAudF, maxAudF) // A2 to A5
     .setCaptionLabel("Frequency (Hz)")
+    .setFont(font)
     ;
   audFreq.slider.onChange(knobLog);
   audFreq.range.onChange(limitLog);
@@ -86,6 +87,7 @@ void setup() {
   audMix = new RangeSlider("audMix", cp5, 250, 250, 100)
     .setRange(minMix, maxMix)
     .setCaptionLabel("Noise Mix")
+    .setFont(font)
     ;
   audMix.slider.onChange(knobLog);
   audMix.range.onChange(limitLog);
@@ -93,6 +95,7 @@ void setup() {
   audAtk = new RangeSlider("audAtk", cp5, 50, 325, 100)
     .setRange(minAtk, maxAtk)
     .setCaptionLabel("Attack (s)")
+    .setFont(font)
     ;
   audAtk.slider.onChange(knobLog);
   audAtk.range.onChange(limitLog);
@@ -100,6 +103,7 @@ void setup() {
   audRel = new RangeSlider("audRel", cp5, 250, 325, 100)
     .setRange(minRel, maxRel)
     .setCaptionLabel("Release (s)")
+    .setFont(font)
     ;
   audRel.slider.onChange(knobLog);
   audRel.range.onChange(limitLog);
@@ -107,6 +111,7 @@ void setup() {
   audReson = new RangeSlider("audReson", cp5, 50, 400, 100)
     .setRange(minReson, maxReson)
     .setCaptionLabel("Resonance")
+    .setFont(font)
     ;
   audReson.slider.onChange(knobLog);
   audReson.range.onChange(limitLog);
@@ -187,14 +192,14 @@ void setup() {
   }
     
   copyButton = cp5.addButton("copyActive")
-    .setPosition(1040, 450)
+    .setPosition(745, 550)
     .setSize(100, 50)
     .setFont(font)
     .setLabel("Copy\nHaptic Params")
     ;
     
   pasteButton = cp5.addButton("pasteToActive")
-    .setPosition(1165, 450)
+    .setPosition(870, 550)
     .setSize(100, 50)
     .setFont(font)
     .setLabel("Paste\nHaptic Params")
@@ -236,7 +241,7 @@ void draw() {
     // Show 2DIY
     update_animation(angles.x * radsPerDegree, angles.y * radsPerDegree, posEE.x, posEE.y);
     fill(0, 0, 0);
-    int xcoord = 1180;
+    int xcoord = 1260;
     textAlign(RIGHT);
     text("Delay (us): " + nf((int)((currTime - lastTime) / 1000), 4), xcoord, 40);
     text("Vel (mm/s): " + nf((int)(velEE.mag() * 1000), 3), xcoord, 60);

@@ -103,6 +103,11 @@ class RangeSlider {
     return this;
   }
   
+  public RangeSlider setFont(ControlFont f) {
+    slider.setFont(f);
+    return this;
+  }
+  
   public float getLowValue() {
     return range.getLowValue();
   }
