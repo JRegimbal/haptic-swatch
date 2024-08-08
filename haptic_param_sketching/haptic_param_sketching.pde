@@ -45,6 +45,7 @@ RangeSlider k, b, freq1, freq2, maxA1, maxA2;
 RangeSlider audFreq, audMix, audAtk, audRel, audReson;
 Toggle manualTog, rewardModeToggle;
 Button posPathFb, negPathFb, posZoneFb, negZoneFb;
+Button limitZone, resetLimits, limitZoneSec, resetLimitsSec;
 RadioButton modeRadio;
 HapticParams clipboard = new HapticParams();
 Button copyButton, pasteButton;
@@ -74,7 +75,7 @@ PVector velEE = new PVector(0, 0);
 PVector fEE = new PVector(0, 0);
 
 final float targetRate = 1000f;
-final long controlElapsedMs = 200;
+final long controlElapsedMs = 100;
 final float textureConst = 2*PI/targetRate;
 
 /** Params */
@@ -117,7 +118,7 @@ CallbackListener knobLog = new CallbackListener() {
 
 CallbackListener limitLog = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {
-    if (activeSwatch != null && isManual && !isSwitch) {
+    if (activeSwatch != null && !isSwitch) {
       TableRow row = log.addRow();
       row.setString("timestamp", OffsetDateTime.now().toString());
       row.setString("command", "modify_limit");
@@ -397,6 +398,18 @@ void keyPressed() {
       processFb((key == 'w' || key == 'W') ? 1 : 0, 2);
     }
   }
+  else if ((key == 'r' || key == 'R') && (toolMode != Mode.Manual)) {
+    limitPrimZone();
+  }
+  else if ((key == 'f' || key == 'F') && (toolMode != Mode.Manual)) {
+    resetPrimLimit();
+  }
+  else if ((key == 't' || key == 'T') && (toolMode == Mode.Split)) {
+    limitSecZone();
+  }
+  else if((key == 'g' || key == 'G') && (toolMode == Mode.Split)) {
+    resetSecLimit();
+  }
   else if (key == 'z' || key == 'Z') {
     // Switch mode
     if (toolMode != Mode.Manual) {
@@ -544,7 +557,6 @@ void processFb(int value, int modality) {
         if (modality > 0) {
           msg.add(modality);
         }
-        msg.print();
         oscp5.send(msg, oscDestination);
     }
     TableRow row = log.addRow();
@@ -555,6 +567,56 @@ void processFb(int value, int modality) {
     println("Reward sent");
   }
 }
+
+void limitPrimZone() {
+  if (activeSwatch != null) {
+    synchronized(activeSwatch) {
+      if (toolMode == Mode.Split) {
+        activeSwatch.setHapticLimit();
+      } else {
+        activeSwatch.setLimit();
+      }
+    }
+    refreshRangeSliders();
+    limitLog.controlEvent(null);
+  }
+}
+
+void limitSecZone() {
+  if (activeSwatch != null) {
+    synchronized(activeSwatch) {
+      activeSwatch.setAudioLimit();
+    }
+    refreshRangeSliders();
+    limitLog.controlEvent(null);
+  }
+}
+
+
+void resetPrimLimit() {
+  if (activeSwatch != null) {
+    synchronized(activeSwatch) {
+      if (toolMode == Mode.Split) {
+        activeSwatch.resetHapticLimit();
+      } else {
+        activeSwatch.resetLimits();
+      }
+    }
+    refreshRangeSliders();
+    limitLog.controlEvent(null);
+  }
+}
+
+void resetSecLimit() {
+  if (activeSwatch != null) {
+    synchronized(activeSwatch) {
+      activeSwatch.resetAudioLimit();
+    }
+    refreshRangeSliders();
+    limitLog.controlEvent(null);
+  }
+}
+
 
 void copyActive() {
   println("Ping");

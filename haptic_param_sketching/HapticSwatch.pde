@@ -81,6 +81,18 @@ class Parameter {
     }
     this.value = newValue;
   }
+  
+  public void setZoneLimit() {
+    final int zoneSize = 3;
+    float step = (this.max - this.min) / nsteps;
+    this.low = max(this.min, this.value - step * zoneSize);
+    this.high = min(this.max, this.value + step * zoneSize);
+  }
+  
+  public void resetLimit() {
+    this.low = this.min;
+    this.high = this.max;
+  }
 }
 
 class HapticParams {
@@ -276,6 +288,50 @@ class HapticSwatch {
   
   ArrayList<Handle> getHandles() {
     return new ArrayList<Handle>(List.of(h));
+  }
+  
+  void setLimit() {
+    this.setHapticLimit();
+    this.setAudioLimit();
+  }
+  
+  void resetLimits() {
+    this.resetHapticLimit();
+    this.resetAudioLimit();
+  }
+  
+  void setHapticLimit() {
+    k.setZoneLimit();
+    mu.setZoneLimit();
+    maxA1.setZoneLimit();
+    maxA2.setZoneLimit();
+    freq1.setZoneLimit();
+    freq2.setZoneLimit();
+  }
+  
+  void resetHapticLimit() {
+    k.resetLimit();
+    mu.resetLimit();
+    maxA1.resetLimit();
+    maxA2.resetLimit();
+    freq1.resetLimit();
+    freq2.resetLimit();
+  }
+  
+  void setAudioLimit() {
+    audFreq.setZoneLimit();
+    audMix.setZoneLimit();
+    audAtk.setZoneLimit();
+    audRel.setZoneLimit();
+    audReson.setZoneLimit();
+  }
+  
+  void resetAudioLimit() {
+    audFreq.resetLimit();
+    audMix.resetLimit();
+    audAtk.resetLimit();
+    audRel.resetLimit();
+    audReson.resetLimit();
   }
   
   void display() {

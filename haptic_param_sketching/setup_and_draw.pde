@@ -140,6 +140,18 @@ void setup() {
       .setFont(font)
       .setLabel("Dislike " + ((toolMode == Mode.Joint) ? "this" : "haptic") + "\n(A)");
       
+    limitZone = cp5.addButton("limitPrimZone")
+      .setPosition(600, 525)
+      .setSize(100, 50)
+      .setFont(font)
+      .setLabel("Limit " + ((toolMode == Mode.Joint) ? "zone" : "haptic") + "\n(R)");
+      
+    resetLimits = cp5.addButton("resetPrimLimit")
+      .setPosition(600, 590)
+      .setSize(100, 50)
+      .setFont(font)
+      .setLabel("Reset " + ((toolMode == Mode.Joint) ? "" : "haptic ") + "limits\n(F)");
+      
     if (toolMode == Mode.Split) {
       posZoneFb = cp5.addButton("processPosSecFb")
         .setPosition(200, 475)
@@ -153,6 +165,18 @@ void setup() {
         .setValue(0)
         .setFont(font)
         .setLabel("Dislike audio\n(S)");
+      
+      limitZoneSec = cp5.addButton("limitSecZone")
+        .setPosition(725, 525)
+        .setSize(100, 50)
+        .setFont(font)
+        .setLabel("Limit audio \n(T)");
+        
+      resetLimitsSec = cp5.addButton("resetSecLimit")
+        .setPosition(725, 590)
+        .setSize(100, 50)
+        .setFont(font)
+        .setLabel("Reset audio limits\n(G)");
     }
   }
     
@@ -172,14 +196,14 @@ void setup() {
   }
     
   copyButton = cp5.addButton("copyActive")
-    .setPosition(745, 550)
+    .setPosition(1150, 375)
     .setSize(100, 50)
     .setFont(font)
     .setLabel("Copy\nHaptic Params")
     ;
     
   pasteButton = cp5.addButton("pasteToActive")
-    .setPosition(870, 550)
+    .setPosition(1150, 450)
     .setSize(100, 50)
     .setFont(font)
     .setLabel("Paste\nHaptic Params")
