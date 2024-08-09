@@ -32,7 +32,7 @@ public enum RewardMode {
 }
 
 InputMode mode = InputMode.SELECT;
-Mode toolMode = Mode.Split;
+Mode toolMode = Mode.Manual;
 final HaplyVersion version = HaplyVersion.V3_1;
 final float nsteps = 20f;
 final int fbScale = 1;
@@ -96,8 +96,8 @@ final NetAddress scDestination = new NetAddress("127.0.0.1", supercollider);
 OscP5 oscp5 = new OscP5(this, source);
 
 //final float maxK=500, maxB=1.0, MAL=2f, MAH=2f;
-final float maxK=150, maxB=0.5, MAL=1f, MAH=1f, maxF=200f, maxAudF=880f, maxMix=1f, maxAtk=0.5, maxRel=2.0, maxReson=1.5;
-final float minK=-100, minMu=0, minAL=0f, minAH=0f, minF=10f, minAudF=220f, minMix=0f, minAtk=0.01, minRel=0.1, minReson=0.25;
+final float maxK=150, maxB=0.5, MAL=1f, MAH=1f, maxF=200f, maxAudF=700, maxMix=1f, maxAtk=0.5, maxRel=2.0, maxReson=1.5;
+final float minK=-100, minMu=0, minAL=0f, minAH=0f, minF=10f, minAudF=261, minMix=0f, minAtk=0.01, minRel=0.1, minReson=0.25;
 
 CallbackListener knobLog = new CallbackListener() {
   public void controlEvent(CallbackEvent evt) {
