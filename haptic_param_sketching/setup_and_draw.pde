@@ -150,7 +150,7 @@ void setup() {
       .setPosition(600, 590)
       .setSize(100, 50)
       .setFont(font)
-      .setLabel("Reset " + ((toolMode == Mode.Joint) ? "" : "haptic ") + "limits\n(F)");
+      .setLabel("Reset " + ((toolMode == Mode.Joint) ? "" : "haptic ") + "\nlimits(F)");
       
     if (toolMode == Mode.Split) {
       posZoneFb = cp5.addButton("processPosSecFb")
@@ -176,7 +176,7 @@ void setup() {
         .setPosition(725, 590)
         .setSize(100, 50)
         .setFont(font)
-        .setLabel("Reset audio limits\n(G)");
+        .setLabel("Reset audio\nlimits (G)");
     }
   }
     
@@ -199,14 +199,14 @@ void setup() {
     .setPosition(1150, 375)
     .setSize(100, 50)
     .setFont(font)
-    .setLabel("Copy\nHaptic Params")
+    .setLabel("Copy\nParams")
     ;
     
   pasteButton = cp5.addButton("pasteToActive")
     .setPosition(1150, 450)
     .setSize(100, 50)
     .setFont(font)
-    .setLabel("Paste\nHaptic Params")
+    .setLabel("Paste\nParams")
     ;
     
   /** Haply */
