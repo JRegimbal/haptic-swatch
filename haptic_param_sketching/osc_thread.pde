@@ -11,7 +11,8 @@ class UpdateThread implements Runnable {
               msg = s.addNormMessage(msg);
               oscp5.send(msg, oscDestination);
               // TODO check if we should update only once or on each active timestep
-            } else {
+            } else if (s.equals(activeSwatch)) {
+              // only step on the active element
               OscMessage msg = new OscMessage("/controller/step");
               msg.add(s.getId());
               oscp5.send(msg, oscDestination);
