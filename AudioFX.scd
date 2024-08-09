@@ -3,7 +3,7 @@ SynthDef(\whatever, {|bus = 0, freq = 440, mix = 0.5, atk = 3, set = 0, rel = 3,
 	var env, sound, output;
 	env = Slew.kr(set, atk, rel);
 	sound = Saw.ar(freq, mix) + WhiteNoise.ar(1.0 - mix);
-	output = Resonz.ar(env * sound, freq, resonz, gain);
+	output = Resonz.ar_(env * sound, freq, resonz, gain * AmpCompA.kr(freq);
 	Out.ar(bus, output);
 }).add;
 
