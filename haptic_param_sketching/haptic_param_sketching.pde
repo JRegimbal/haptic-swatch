@@ -7,13 +7,15 @@ import controlP5.*;
 import netP5.*;
 import oscP5.*;
 
-private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
 
 public enum Mode {
   Manual,
   Joint,
   Split
 }
+
+Mode toolMode = Mode.Joint;
 
 public enum HaplyVersion {
   V2,
@@ -32,7 +34,6 @@ public enum RewardMode {
 }
 
 InputMode mode = InputMode.SELECT;
-Mode toolMode = Mode.Manual;
 final HaplyVersion version = HaplyVersion.V3_1;
 final float nsteps = 20f;
 final int fbScale = 1;
@@ -75,6 +76,7 @@ PVector velEE = new PVector(0, 0);
 PVector fEE = new PVector(0, 0);
 
 final float targetRate = 1000f;
+final long audioElapsedMs = 20;
 final long controlElapsedMs = 200;
 final float textureConst = 2*PI/targetRate;
 

@@ -221,6 +221,7 @@ void setup() {
   UpdateThread ot = new UpdateThread();
   handle = scheduler.scheduleAtFixedRate(st, 1000, (long)(1000000f / targetRate), MICROSECONDS);
   scheduler.scheduleAtFixedRate(ot, 1, controlElapsedMs, MILLISECONDS);
+  scheduler.scheduleAtFixedRate(new AudioThread(), 1, audioElapsedMs, MILLISECONDS);
 }
 
 void exit() {
