@@ -129,7 +129,7 @@ class HapticSwatch {
   private int id;
   public long elapsed = 0;
 
-  static final long inactiveTime = 500000000; // 500 ms
+  static final long inactiveTime = 50000000; // 50 ms
   static final long inactiveTimeAudio = 50000000; // 50 ms
   public long lastForceTime = 0;
   public boolean lastActive = false;

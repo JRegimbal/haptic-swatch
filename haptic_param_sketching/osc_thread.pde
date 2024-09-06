@@ -1,4 +1,29 @@
 /** OSC Data update thread */
+class AudioThread implements Runnable {
+  void run() {
+    for (HapticSwatch s : swatches.values()) {
+      if (!s.audioActive && s.lastForce.mag() != 0) {
+        s.audioActive = true;
+      }
+        if (s.audioActive) {
+          OscMessage msg = new OscMessage("/audio/touch");
+          msg.add(s.getId());
+          msg.add(s.audFreq.value);  // freq
+          msg.add(s.audMix.value);    // mix
+          msg.add(s.audAtk.value);    // atk
+          msg.add(s.audRel.value);    // rel
+          msg.add(s.audReson.value);    // resonz
+          msg.add(s.lastForce.mag()); // force N
+          oscp5.send(msg, scDestination);
+          if (s.lastForce.mag() == 0) {
+            s.audioActive = false;
+          }
+      }
+     }
+  }
+}
+        
+
 class UpdateThread implements Runnable {
   void run() {
     for (HapticSwatch s : swatches.values()) {
@@ -19,6 +44,7 @@ class UpdateThread implements Runnable {
               // Action applied in oscEvent callback
             }
           }
+          /*
           if (!s.audioActive && s.lastForce.mag() != 0) {
             s.audioActive = true;
           }
@@ -36,6 +62,7 @@ class UpdateThread implements Runnable {
               s.audioActive = false;
             }
           }
+          */
       /* else { println("Not Active"); } */
         } else if (rwMode == RewardMode.ATTENTION) {
           if (s.newState()) {
