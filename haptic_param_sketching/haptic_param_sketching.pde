@@ -15,7 +15,7 @@ public enum Mode {
   Split
 }
 
-Mode toolMode = Mode.Joint;
+Mode toolMode = Mode.Split;
 
 public enum HaplyVersion {
   V2,
@@ -332,19 +332,17 @@ void mouseWheel(MouseEvent event) {
 
 void activateSwatch(HapticSwatch swatch) {
   activeSwatch = swatch;
-  for (HapticSwatch s : swatches.values()) {
-    k.setParameter(null);
-    b.setParameter(null);
-    freq1.setParameter(null);
-    maxA1.setParameter(null);
-    freq2.setParameter(null);
-    maxA2.setParameter(null);
-    audFreq.setParameter(null);
-    audMix.setParameter(null);
-    audAtk.setParameter(null);
-    audRel.setParameter(null);
-    audReson.setParameter(null);
-  }
+  k.setParameter(null);
+  b.setParameter(null);
+  freq1.setParameter(null);
+  maxA1.setParameter(null);
+  freq2.setParameter(null);
+  maxA2.setParameter(null);
+  audFreq.setParameter(null);
+  audMix.setParameter(null);
+  audAtk.setParameter(null);
+  audRel.setParameter(null);
+  audReson.setParameter(null);
   if (activeSwatch != null) {
     k.setParameter(activeSwatch.k);
     b.setParameter(activeSwatch.mu);
@@ -633,7 +631,8 @@ void pasteToActive() {
   println("Pong");
   if (activeSwatch != null) {
     synchronized(activeSwatch) {
-      activeSwatch.setParams(new HapticParams(clipboard));
+      activeSwatch.setParams(new HapticParams(clipboard)); //<>//
+      activateSwatch(activeSwatch); // Necessary to update the parameter objects associated to the UI elements
       refreshRangeSliders();
     }
   }
