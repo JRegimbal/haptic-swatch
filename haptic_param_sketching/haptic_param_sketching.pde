@@ -416,6 +416,15 @@ void keyPressed() {
       manualTog.toggle();
     }
   }
+  else if ((key == 'j' || key == 'J') && !isManual) {
+    if (activeSwatch != null) {
+      OscMessage msg = new OscMessage("/controller/jump");
+      msg.add(activeSwatch.getId());
+      oscp5.send(msg, oscDestination);
+      // Instructs agent to jump in memory. When a step is next requested it will update.
+      // I don't like this but we live with the choices we've made.
+    }
+  }
   else if (key == 'x' || key == 'X') {
     // switch reward
     //rewardModeToggle.toggle();
