@@ -47,6 +47,7 @@ RangeSlider audFreq, audMix, audAtk, audRel, audReson;
 Toggle manualTog, rewardModeToggle;
 Button posPathFb, negPathFb, posZoneFb, negZoneFb;
 Button limitZone, resetLimits, limitZoneSec, resetLimitsSec;
+Button jump;
 RadioButton modeRadio;
 HapticParams clipboard = new HapticParams();
 Button copyButton, pasteButton;
@@ -417,12 +418,7 @@ void keyPressed() {
     }
   }
   else if ((key == 'j' || key == 'J') && !isManual) {
-    if (activeSwatch != null) {
-      OscMessage msg = new OscMessage("/controller/jump");
-      msg.add(activeSwatch.getId());
-      oscp5.send(msg, oscDestination);
-      // Agent will automatically step following a jump - no further action needed
-    }
+    jumpUnexplored();
   }
   else if (key == 'x' || key == 'X') {
     // switch reward
@@ -625,6 +621,14 @@ void resetSecLimit() {
   }
 }
 
+void jumpUnexplored() {
+  if (activeSwatch != null) {
+    OscMessage msg = new OscMessage("/controller/jump");
+    msg.add(activeSwatch.getId());
+    oscp5.send(msg, oscDestination);
+    // Agent will automatically step following a jump - no further action needed
+  }
+}
 
 void copyActive() {
   println("Ping");
