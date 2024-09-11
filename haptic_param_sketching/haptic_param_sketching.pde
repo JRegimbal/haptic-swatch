@@ -15,7 +15,7 @@ public enum Mode {
   Split
 }
 
-Mode toolMode = Mode.Split;
+Mode toolMode = Mode.Joint;
 
 public enum HaplyVersion {
   V2,
