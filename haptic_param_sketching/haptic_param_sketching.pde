@@ -421,8 +421,7 @@ void keyPressed() {
       OscMessage msg = new OscMessage("/controller/jump");
       msg.add(activeSwatch.getId());
       oscp5.send(msg, oscDestination);
-      // Instructs agent to jump in memory. When a step is next requested it will update.
-      // I don't like this but we live with the choices we've made.
+      // Agent will automatically step following a jump - no further action needed
     }
   }
   else if (key == 'x' || key == 'X') {
