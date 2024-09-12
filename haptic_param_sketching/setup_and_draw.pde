@@ -179,12 +179,14 @@ void setup() {
         .setLabel("Reset audio\nlimits (G)");
     }
     
-    jump = cp5.addButton("jumpUnexplored")
-      .setPosition(475, 550)
-      .setSize(100, 50)
-      .setFont(font)
-      .setLabel("Jump (J)")
-    ;
+    if (toolMode != Mode.Manual) {
+      jump = cp5.addButton("jumpUnexplored")
+        .setPosition(475, 550)
+        .setSize(100, 50)
+        .setFont(font)
+        .setLabel("Jump (J)")
+      ;
+    }
   }
     
   modeRadio = cp5.addRadioButton("mode")
