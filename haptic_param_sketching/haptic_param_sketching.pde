@@ -623,10 +623,15 @@ void resetSecLimit() {
 
 void jumpUnexplored() {
   if (activeSwatch != null) {
+    int id = activeSwatch.getId();
     OscMessage msg = new OscMessage("/controller/jump");
-    msg.add(activeSwatch.getId());
+    msg.add(id);
     oscp5.send(msg, oscDestination);
     // Agent will automatically step following a jump - no further action needed
+    TableRow row = log.addRow();
+    row.setString("timestamp", OffsetDateTime.now().toString());
+    row.setString("command", "jump");
+    row.setInt("element", id);
   }
 }
 
