@@ -12,7 +12,7 @@ from typing_extensions import override
 
 PARAM_EPSILON = 0.1
 PARAM_ALPHA = 0.002
-PARAM_BETA = 1
+PARAM_BETA = 0.2
 PARAM_C = 0.01
 
 
@@ -80,7 +80,7 @@ class NeuralSGDAgent(BaseAgent):
         self._net = ReLUNet(self._ndims)
         #self._criterion = torch.nn.MSELoss()
         self._criterion = DTAMERLoss(2 * self._ndims)
-        self._optimizer = torch.optim.SGD(self._net.parameters(), lr=alpha)
+        self._optimizer = torch.optim.Adam(self._net.parameters(), lr=alpha)
         self._epsilon = epsilon
         self._alpha = alpha
         self._beta = PARAM_BETA
@@ -112,7 +112,7 @@ class NeuralSGDAgent(BaseAgent):
                 self.tiling.density(self.state + self.to_action(action)) * self.tiling.total_count + self._c,
                 -0.5
             ) for action in valid_actions])
-            valid_values = action_values + explore_values
+            valid_values = action_values #+ explore_values
             #print(f"Action values ({len(action_values)}): {action_values}")
             #print(f"Explore values ({len(explore_values)}): {explore_values}")
             max_ind = np.argmax(valid_values)
@@ -212,8 +212,10 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
         self._criterion1 = DTAMERLoss(ndims1 * 2)
         self._criterion2 = DTAMERLoss(ndims2 * 2)
         del self._optimizer
-        self._optimizer1 = torch.optim.SGD(self._net1.parameters(), lr=alpha)
-        self._optimizer2 = torch.optim.SGD(self._net2.parameters(), lr=alpha)
+        #self._optimizer1 = torch.optim.SGD(self._net1.parameters(), lr=alpha)
+        #self._optimizer2 = torch.optim.SGD(self._net2.parameters(), lr=alpha)
+        self._optimizer1 = torch.optim.Adam(self._net1.parameters(), lr=alpha)
+        self._optimizer2 = torch.optim.Adam(self._net2.parameters(), lr=alpha)
 
     def split(self, value: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """
@@ -269,7 +271,7 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
                 self.tiling.density(self.state + self.to_action(action)) * self.tiling.total_count + self._c,
                 -0.5
             ) for action in valid_actions])
-            feature_values = feature_reward_values + feature_explore_values
+            feature_values = feature_reward_values #+ feature_explore_values
             max_ind = np.argmax(feature_values)
             #print(f"Max s1: {np.max(action_values1)} s2 {np.max(action_values2)}")
             print(f"Contribution: model {feature_reward_values[max_ind]}, explore {feature_explore_values[max_ind]}")
