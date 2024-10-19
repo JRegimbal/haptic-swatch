@@ -78,7 +78,7 @@ PVector fEE = new PVector(0, 0);
 
 final float targetRate = 1000f;
 final long audioElapsedMs = 20;
-final long controlElapsedMs = 200;
+final long controlElapsedMs = 500;
 final float textureConst = 2*PI/targetRate;
 
 /** Params */
