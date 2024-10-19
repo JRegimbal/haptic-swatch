@@ -74,8 +74,8 @@ class UniformCrediter:
     """
     def __init__(self, ndims: int):
         self._history: list[tuple[np.ndarray, float]] = []
-        self._low = 0.1
-        self._high = 2.0
+        self._low = 0.2
+        self._high = 4.0
 
     def add_index(self, feature_vec: np.ndarray):
         self._history.append((feature_vec, time.time()))
