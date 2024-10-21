@@ -160,6 +160,20 @@ class NeuralSGDAgent(BaseAgent):
             print(f"ERROR: {e}")
             print("Not applying reward...")
             return
+
+        # Give positive reward in opposite direction for next action
+        # Note that states and actions are in per-modality format
+        if reward < 0:
+            aug_states = []
+            aug_actions = []
+            aug_weights = -0.5 * credit_weight
+            for s, a in zip(states, actions):
+                aug_states.append(s + self.to_action(a[0]))
+                aug_actions.append((a[0] + self._ndims) % (self._ndims * 2))
+            states = np.concatenate((states, np.array(aug_states)), axis=0)
+            actions = np.concatenate((actions, np.array(aug_actions).reshape(-1, 1)), axis=0)
+            credit_weight = np.concatenate((credit_weight, aug_weights), axis=0)
+
         print("determined guidance")
         self._optimizer.zero_grad()
         error = self._criterion(self._net(torch.from_numpy(states)), torch.from_numpy(credit_weight), torch.from_numpy(actions))
@@ -244,16 +258,39 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
             action_idx = action_idx - self._ndims + self._split_index
         return action_idx
 
+    def _from_model_idx(self, action_idx: int, isAudio: bool) -> int:
+        if isAudio:
+            action_idx = action_idx + self._split_index
+            if action_idx >= self._ndims:
+                action_idx = action_idx + self._split_index
+        elif action_idx >= self._split_index:
+            action_idx = action_idx + self._ndims - self._split_index
+        return action_idx
+
     def set_state(self, state: Union[tuple[float, ...], np.ndarray], *, lows=None, highs=None, action=None, history=True):
         old_state = BaseAgent.set_state(self, state, lows=lows, highs=highs, action=action, history=history)
         if history:
             self.tiling.count(old_state)
+        if (history and (action is not None)) or ((not history) and (action is None)):
+            # If no action we need to determine it
+            # May need to split into multiple actions
+            to_add = []
             if action is not None:
-                state1, state2 = self.split(old_state)
-                if self._is_haptic_action(action):
-                    self.crediter1.add_index((state1, self._to_model_idx(action, False)))
+                to_add.append((old_state, action))
+            else:
+                state_diff = state - old_state
+                max_ind = np.argmax(np.abs(state_diff))
+                was_negative = (state_diff[max_ind] < 0.)
+                num_actions = int(np.floor(np.abs(state_diff[max_ind]) / self._step))
+                sel_action = max_ind + self._ndims * (1 if was_negative else 0)
+                to_add = [(old_state + i * self.to_action(sel_action), sel_action) for i in range(num_actions)]
+            print(f"Saving {len(to_add)}")
+            for s, a in to_add:
+                state1, state2 = self.split(s)
+                if self._is_haptic_action(a):
+                    self.crediter1.add_index((state1, self._to_model_idx(a, False)))
                 else:
-                    self.crediter2.add_index((state2, self._to_model_idx(action, True)))
+                    self.crediter2.add_index((state2, self._to_model_idx(a, True)))
 
     def _select_action(self) -> Optional[int]:
         valid_actions = [action for action in self._included_actions() if self._check_bounds(self.state + self.to_action(action))]
@@ -334,6 +371,21 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
         if states.size == 0:
             print("No history for this modality! Continuing...")
             return
+
+        # Give positive reward in opposite direction for next action
+        # Note that states and actions are in per-modality format
+        if reward < 0:
+            aug_states = []
+            aug_actions = []
+            aug_weights = -credit_weight
+            for s, a in zip(states, actions):
+                action_part = self.split(self.to_action(self._from_model_idx(a[0], modality == 2)))[0 if modality == 1 else 1]
+                dim_size = self._split_index if modality == 1 else (self._ndims - self._split_index)
+                aug_states.append(s + action_part)
+                aug_actions.append((a[0] + dim_size) % (dim_size * 2))
+            states = np.concatenate((states, np.array(aug_states)), axis=0)
+            actions = np.concatenate((actions, np.array(aug_actions).reshape(-1, 1)), axis=0)
+            credit_weight = np.concatenate((credit_weight, aug_weights), axis=0)
 
         if modality == 1:
             self._optimizer1.zero_grad()
