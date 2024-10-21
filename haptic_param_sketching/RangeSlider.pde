@@ -8,6 +8,7 @@ class RangeSlider {
   int space = 25;
   int Height = 20;
   CallbackListener CL;
+  private int defaultForeground;
   protected float diff = 1.0f;
   protected boolean rangeEnable = true, autoLock = false;
   protected Parameter param = null;
@@ -17,6 +18,7 @@ class RangeSlider {
       .setColorCaptionLabel(color(20, 20, 20))
       .setHeight(Height)
       ;
+    defaultForeground = slider.getColor().getForeground();
     range = cp5.addRange(name + "-range")
       .setColorCaptionLabel(color(20, 20, 20))
       .setCaptionLabel("Auto Range")
@@ -42,6 +44,7 @@ class RangeSlider {
       public void controlEvent(CallbackEvent evt) {
         Controller c = evt.getController();
         if (c.equals(slider)) {
+          resetForeground();
           if (slider.getValue() < range.getLowValue()) {
             range.setLowValue(slider.getValue());
           }
@@ -121,6 +124,11 @@ class RangeSlider {
   }
   
   public void setValue(Parameter p) {
+    if (slider.getValue() != p.value) {
+      slider.setColorForeground(color(255, 0, 0));
+    } else {
+      resetForeground();
+    }
     slider.setBroadcast(false)
       .setValue(p.value)
       .setBroadcast(true);
@@ -133,6 +141,10 @@ class RangeSlider {
     if (p.parameterEnable != rangeToggle.getBooleanValue()) {
       rangeToggle.setValue(p.parameterEnable);
     }
+  }
+  
+  public void resetForeground() {
+    slider.setColorForeground(defaultForeground);
   }
   
   public void setParameter(Parameter p) {
