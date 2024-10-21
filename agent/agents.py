@@ -12,7 +12,7 @@ from typing_extensions import override
 
 PARAM_EPSILON = 0.1
 PARAM_ALPHA = 0.002
-PARAM_BETA = 0.2
+PARAM_BETA = 0.1 #0.2
 PARAM_C = 0.01
 
 
