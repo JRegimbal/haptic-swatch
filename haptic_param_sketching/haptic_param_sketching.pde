@@ -48,6 +48,7 @@ Toggle manualTog, rewardModeToggle;
 Button posPathFb, negPathFb, posZoneFb, negZoneFb;
 Button limitZone, resetLimits, limitZoneSec, resetLimitsSec;
 Button jump;
+Button hapticLock, audioLock;
 RadioButton modeRadio;
 HapticParams clipboard = new HapticParams();
 Button copyButton, pasteButton;
@@ -634,6 +635,34 @@ void jumpUnexplored() {
     row.setString("command", "jump");
     row.setInt("element", id);
   }
+}
+
+void toggleHapticLock() {
+  boolean newVal = !(
+    k.getRangeEnable() && b.getRangeEnable() && maxA1.getRangeEnable() &&
+    freq1.getRangeEnable() && maxA2.getRangeEnable() && freq2.getRangeEnable()
+  );
+  
+  println(newVal);
+  
+  k.rangeToggle.setValue(newVal);
+  b.rangeToggle.setValue(newVal);
+  maxA1.rangeToggle.setValue(newVal);
+  freq1.rangeToggle.setValue(newVal);
+  maxA2.rangeToggle.setValue(newVal);
+  freq2.rangeToggle.setValue(newVal);
+}
+
+void toggleAudioLock() {
+  boolean newval = !(
+    audFreq.getRangeEnable() && audMix.getRangeEnable() && audAtk.getRangeEnable() &&
+    audRel.getRangeEnable() && audReson.getRangeEnable()
+  );
+  audFreq.rangeToggle.setValue(newval);
+  audMix.rangeToggle.setValue(newval);
+  audAtk.rangeToggle.setValue(newval);
+  audRel.rangeToggle.setValue(newval);
+  audReson.rangeToggle.setValue(newval);
 }
 
 void copyActive() {

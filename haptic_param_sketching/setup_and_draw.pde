@@ -181,12 +181,25 @@ void setup() {
     
     if (toolMode != Mode.Manual) {
       jump = cp5.addButton("jumpUnexplored")
-        .setPosition(475, 550)
+        .setPosition(350, 475)
         .setSize(100, 50)
         .setFont(font)
         .setLabel("Jump (J)")
       ;
     }
+    
+    hapticLock = cp5.addButton("toggleHapticLock")
+      .setPosition(350, 590)
+      .setSize(100, 50)
+      .setFont(font)
+      .setLabel("Haptic Toggle")
+      ;
+    audioLock = cp5.addButton("toggleAudioLock")
+      .setPosition(475, 590)
+      .setSize(100, 50)
+      .setFont(font)
+      .setLabel("Audio Toggle")
+      ;
   }
     
   modeRadio = cp5.addRadioButton("mode")

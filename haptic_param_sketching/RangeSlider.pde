@@ -176,4 +176,6 @@ class RangeSlider {
     }
     this.refreshLocks();
   }
+  
+  public boolean getRangeEnable() { return this.rangeEnable; }
 }
