@@ -284,7 +284,6 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
                 num_actions = int(np.floor(np.abs(state_diff[max_ind]) / self._step))
                 sel_action = max_ind + self._ndims * (1 if was_negative else 0)
                 to_add = [(old_state + i * self.to_action(sel_action), sel_action) for i in range(num_actions)]
-            print(f"Saving {len(to_add)}")
             for s, a in to_add:
                 state1, state2 = self.split(s)
                 if self._is_haptic_action(a):
@@ -308,7 +307,7 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
                 self.tiling.density(self.state + self.to_action(action)) * self.tiling.total_count + self._c,
                 -0.5
             ) for action in valid_actions])
-            feature_values = feature_reward_values #+ feature_explore_values
+            feature_values = feature_reward_values + feature_explore_values
             max_ind = np.argmax(feature_values)
             #print(f"Max s1: {np.max(action_values1)} s2 {np.max(action_values2)}")
             print(f"Contribution: model {feature_reward_values[max_ind]}, explore {feature_explore_values[max_ind]}")
@@ -369,12 +368,27 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
             return
 
         if states.size == 0:
-            print("No history for this modality! Continuing...")
-            return
-
-        # Give positive reward in opposite direction for next action
-        # Note that states and actions are in per-modality format
-        if reward < 0:
+            print("No history for this modality! Applying zone reward...")
+            ZONE_STEPS = 3
+            state_part = self.split(self.state)[0 if modality == 1 else 1]
+            def from_model_action_idx(action: int) -> np.ndarray:
+                act = np.zeros(len(state_part))
+                act[action % len(state_part)] = self._step * (-1 if action >= len(state_part) else 1)
+                return act
+            states = []
+            actions = []
+            for j in range(ZONE_STEPS):
+                for i in range(2 * len(state_part)):
+                    new_state = state_part + (j + 1) * from_model_action_idx(i)
+                    if ((new_state >= 0.) & (new_state <= 1.)).all(0):
+                        states.append(new_state)
+                        actions.append(i)
+            states = np.array(states).reshape(-1, len(state_part))
+            actions = np.array(actions).reshape(-1, 1)
+            credit_weight = reward * np.ones(actions.shape)
+        elif reward < 0:
+            # Give positive reward in opposite direction for next action
+            # Note that states and actions are in per-modality format
             aug_states = []
             aug_actions = []
             aug_weights = -credit_weight
