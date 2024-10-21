@@ -301,6 +301,13 @@ void draw() {
     shape(create_line(xExtent - 19e-3, 0, xExtent - 19e-3, yExtent));
     
     // Process change in autonomous/manual update mode
+    boolean buttonPressed = (widget.get_sensor_data()[0] < 1000f);
+    if (buttonPressed != lastButtonPressed) {
+      if (toolMode != Mode.Manual) {
+      manualTog.toggle();
+      }
+      lastButtonPressed = buttonPressed;
+    }
     if (lastMode != isManual) {
       k.setAutoLock(!isManual);
       b.setAutoLock(!isManual);
@@ -347,6 +354,7 @@ Device haplysetup(byte widgetID, Board haplyBoard) {
       widget.add_encoder(2, CCW, 12, 4880, 1);    //left in theory
     }
   }
+  widget.add_analog_sensor("A2");
   widget.device_set_parameters();
   return widget;
 }

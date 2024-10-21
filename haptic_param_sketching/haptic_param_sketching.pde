@@ -15,7 +15,7 @@ public enum Mode {
   Split
 }
 
-Mode toolMode = Mode.Joint;
+Mode toolMode = Mode.Split;
 
 public enum HaplyVersion {
   V2,
@@ -52,6 +52,7 @@ RadioButton modeRadio;
 HapticParams clipboard = new HapticParams();
 Button copyButton, pasteButton;
 long currTime, lastTime = 0;
+boolean lastButtonPressed = false;
 
 /** 2DIY setup */
 Board haplyBoard;
