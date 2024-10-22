@@ -14,6 +14,8 @@ PARAM_EPSILON = 0.1
 PARAM_ALPHA = 0.002
 PARAM_BETA = 0.1 #0.2
 PARAM_C = 0.01
+PARAM_AUG = 0.5
+PARAM_ZONE_STEPS = 3
 
 
 def and_op(x, y):
@@ -99,8 +101,20 @@ class NeuralSGDAgent(BaseAgent):
         old_state = BaseAgent.set_state(self, state, lows=lows, highs=highs, action=action, history=history)
         if history:
             self.tiling.count(old_state)
+        if (history and (action is not None)) or ((not history) and (action is None)):
+            # For manual, allow multi-action splitting
+            to_add = []
             if action is not None:
-                self.crediter.add_index((old_state, action))
+                to_add.append((old_state, action))
+            else:
+                state_diff = state - old_state
+                max_ind = np.argmax(np.abs(state_diff))
+                was_negative = (state_diff[max_ind] < 0.)
+                num_actions = int(np.floor(np.abs(state_diff[max_ind]) / self._step))
+                sel_action = int(max_ind + self._ndims * (1 if was_negative else 0))
+                to_add = [(old_state + i * self.to_action(sel_action), sel_action) for i in range(num_actions)]
+            for tup in to_add:
+                self.crediter.add_index(tup)
 
     def _select_action(self) -> Optional[int]:
         max_actions: list[int] = []
@@ -112,7 +126,7 @@ class NeuralSGDAgent(BaseAgent):
                 self.tiling.density(self.state + self.to_action(action)) * self.tiling.total_count + self._c,
                 -0.5
             ) for action in valid_actions])
-            valid_values = action_values #+ explore_values
+            valid_values = action_values + explore_values
             #print(f"Action values ({len(action_values)}): {action_values}")
             #print(f"Explore values ({len(explore_values)}): {explore_values}")
             max_ind = np.argmax(valid_values)
@@ -161,12 +175,26 @@ class NeuralSGDAgent(BaseAgent):
             print("Not applying reward...")
             return
 
+        if states.size == 0:
+            print("No recent history! Applying zone reward...")
+            states = []
+            actions = []
+            for j in range(PARAM_ZONE_STEPS):
+                for i in range(2 * self._ndims):
+                    new_state = self.state + (j + 1) * self.to_action(i)
+                    if ((new_state >= 0.) & (new_state <= 1.)).all(0):
+                        states.append(new_state)
+                        actions.append(i)
+            states = np.array(states).reshape(-1, self._ndims)
+            actions = np.array(actions).reshape(-1, 1)
+            credit_weight = reward * np.ones(actions.shape)
+
         # Give positive reward in opposite direction for next action
         # Note that states and actions are in per-modality format
         if reward < 0:
             aug_states = []
             aug_actions = []
-            aug_weights = -0.5 * credit_weight
+            aug_weights = -PARAM_AUG * credit_weight
             for s, a in zip(states, actions):
                 aug_states.append(s + self.to_action(a[0]))
                 aug_actions.append((a[0] + self._ndims) % (self._ndims * 2))
@@ -282,7 +310,7 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
                 max_ind = np.argmax(np.abs(state_diff))
                 was_negative = (state_diff[max_ind] < 0.)
                 num_actions = int(np.floor(np.abs(state_diff[max_ind]) / self._step))
-                sel_action = max_ind + self._ndims * (1 if was_negative else 0)
+                sel_action = int(max_ind + self._ndims * (1 if was_negative else 0))
                 to_add = [(old_state + i * self.to_action(sel_action), sel_action) for i in range(num_actions)]
             for s, a in to_add:
                 state1, state2 = self.split(s)
@@ -369,7 +397,6 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
 
         if states.size == 0:
             print("No history for this modality! Applying zone reward...")
-            ZONE_STEPS = 3
             state_part = self.split(self.state)[0 if modality == 1 else 1]
             def from_model_action_idx(action: int) -> np.ndarray:
                 act = np.zeros(len(state_part))
@@ -377,7 +404,7 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
                 return act
             states = []
             actions = []
-            for j in range(ZONE_STEPS):
+            for j in range(PARAM_ZONE_STEPS):
                 for i in range(2 * len(state_part)):
                     new_state = state_part + (j + 1) * from_model_action_idx(i)
                     if ((new_state >= 0.) & (new_state <= 1.)).all(0):
@@ -391,7 +418,7 @@ class SplitNeuralSGDAgent(NeuralSGDAgent):
             # Note that states and actions are in per-modality format
             aug_states = []
             aug_actions = []
-            aug_weights = -credit_weight
+            aug_weights = -PARAM_AUG * credit_weight
             for s, a in zip(states, actions):
                 action_part = self.split(self.to_action(self._from_model_idx(a[0], modality == 2)))[0 if modality == 1 else 1]
                 dim_size = self._split_index if modality == 1 else (self._ndims - self._split_index)
