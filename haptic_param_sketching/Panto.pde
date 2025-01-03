@@ -29,7 +29,7 @@ void create_pantagraph(){
   float LAni = pixelsPerMeter * L;
   float rEEAni = pixelsPerMeter * rEE;
   
-  if (version == HaplyVersion.V3 || version == HaplyVersion.V3_1) {
+  if (version == HaplyVersion.V3 || version == HaplyVersion.V3_1 || version == HaplyVersion.DUMMY) {
     pGraph = createShape();
     pGraph.beginShape();
     pGraph.fill(255);
@@ -88,7 +88,7 @@ void update_animation(float th1, float th2, float xE, float yE){
   th1 = 3.14 - th1;
   th2 = 3.14 - th2;
   
-  if (version == HaplyVersion.V3 || version == HaplyVersion.V3_1) {
+  if (version == HaplyVersion.V3 || version == HaplyVersion.V3_1 || version == HaplyVersion.DUMMY) {
     pGraph.setVertex(0, deviceOrigin.x- 38e-3 * pixelsPerMeter, deviceOrigin.y );
     //pGraph.setVertex(0, deviceOrigin.x - 19e-3 * pixelsPerMeter, deviceOrigin.y);
     pGraph.setVertex(1, deviceOrigin.x , deviceOrigin.y );

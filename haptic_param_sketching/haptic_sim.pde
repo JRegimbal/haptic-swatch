@@ -31,7 +31,9 @@ class SimulationThread implements Runnable {
       fEE.set(graphics_to_device(force));
     }
     torques.set(widget.set_device_torques(fEE.array()));
-    widget.device_write_torques();
+    if (version != HaplyVersion.DUMMY) {
+      widget.device_write_torques();
+    }
     renderingForce = false;
   }
 }

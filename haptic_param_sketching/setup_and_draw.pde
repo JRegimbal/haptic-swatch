@@ -232,8 +232,12 @@ void setup() {
     ;
     
   /** Haply */
-  haplyBoard = new Board(this, Serial.list()[0], 0);
-  widget = haplysetup(widgetID, haplyBoard);
+  if (version != HaplyVersion.DUMMY) {
+    haplyBoard = new Board(this, Serial.list()[0], 0);
+    widget = haplysetup(widgetID, haplyBoard);
+  } else {
+    widget = haplysetup(widgetID, null);
+  }
   panto_setup();
 
   resetAgents();
@@ -314,12 +318,14 @@ void draw() {
     shape(create_line(xExtent - 19e-3, 0, xExtent - 19e-3, yExtent));
     
     // Process change in autonomous/manual update mode
-    boolean buttonPressed = (widget.get_sensor_data()[0] < 1000f);
-    if (buttonPressed != lastButtonPressed) {
-      if (toolMode != Mode.Manual) {
-      manualTog.toggle();
+    if (version != HaplyVersion.DUMMY) {
+      boolean buttonPressed = (widget.get_sensor_data()[0] < 1000f);
+      if (buttonPressed != lastButtonPressed) {
+        if (toolMode != Mode.Manual) {
+        manualTog.toggle();
+        }
+        lastButtonPressed = buttonPressed;
       }
-      lastButtonPressed = buttonPressed;
     }
     if (lastMode != isManual) {
       k.setAutoLock(!isManual);
@@ -352,7 +358,7 @@ Device haplysetup(byte widgetID, Board haplyBoard) {
     widget.add_actuator(2, CW, 1);
     widget.add_encoder(1, CCW, 241, 10752, 2);
     widget.add_encoder(2, CW, -61, 10752, 1);
-  } else if (version == HaplyVersion.V3 || version == HaplyVersion.V3_1) {
+  } else if (version == HaplyVersion.V3 || version == HaplyVersion.V3_1 || version == HaplyVersion.DUMMY) {
     pantograph = new Pantograph(3);
     widget.set_mechanism(pantograph);
     widget.add_actuator(1, CCW, 2);
@@ -368,6 +374,8 @@ Device haplysetup(byte widgetID, Board haplyBoard) {
     }
   }
   widget.add_analog_sensor("A2");
-  widget.device_set_parameters();
+  if (version != HaplyVersion.DUMMY) {
+    widget.device_set_parameters();
+  }
   return widget;
 }

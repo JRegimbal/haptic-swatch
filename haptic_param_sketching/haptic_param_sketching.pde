@@ -20,7 +20,8 @@ Mode toolMode = Mode.Split;
 public enum HaplyVersion {
   V2,
   V3,
-  V3_1
+  V3_1,
+  DUMMY
 }
 
 public enum InputMode {
@@ -34,7 +35,7 @@ public enum RewardMode {
 }
 
 InputMode mode = InputMode.SELECT;
-final HaplyVersion version = HaplyVersion.V3_1;
+final HaplyVersion version = HaplyVersion.DUMMY;
 final float nsteps = 20f;
 final int fbScale = 1;
 RewardMode rwMode = RewardMode.EXPLICIT;
